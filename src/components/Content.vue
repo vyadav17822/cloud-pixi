@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h2>Shell Management</h2>
+      <!-- <h2>Shell Management</h2> -->
       <div ref="terminal"></div>
     </div>
   </template>
@@ -14,7 +14,7 @@
 
 const terminal = new Terminal({
   termName: "webshell",
-  cols: 130,
+  cols: 90,
   rows: 24,
   screenKeys: true,
   convertEol: true
@@ -26,16 +26,17 @@ terminal.loadAddon(new WebLinksAddon());
     name: 'DashboardContent',
     mounted() {
       this.initializeTerminal();
+      this.enablePaste();
       this.reNew();
     },
     methods: {
       reNew() {
         // const terminal = new Terminal();
         setInterval(() =>{
-          axios.get("http://localhost:3003/getlog").then(
+          axios.get("http://localhost:8000/api/logs/?Content-Type=application/json").then(
         (response) =>{
-          console.log("----- response:: ",response, response.data.log,length);
-          terminal.write(response.data.log);
+          console.log("----- response:: ",response);
+          terminal.write(response.data.join());
         }).catch(error =>{
           console.log(error);
         })
@@ -58,17 +59,31 @@ terminal.loadAddon(new WebLinksAddon());
             terminal.write("hello")
           } else if (printable) {
             terminal.write(e.key);
+          } else if (terminal.hasSelection() && e.domEvent.key === "�") {
+            this.execCommand('copy')
           }
         });
+        terminal.write('$ '); // Display prompt initially
+      },
+      enablePaste() {
         terminal.attachCustomKeyEventHandler((key) => {
-          if (key.code === 'KeyC' || key.code === 'KeyV') {
-            if (key.ctrlKey && key.shiftKey) {
-              return false;
+          if(key.ctrlKey && (key.key === 'v' || key.key === 'V')){
+            navigator.clipboard.readText().then(text => {
+              // terminal.write(text);
+              terminal.paste(text);
+            }).catch(err => {
+              console.log(err);
+            });
+            return false;
+          } else if(key.ctrlKey && (key.key === 'c'||key.key ==='C')){
+            let selectedText = terminal.getSelection();
+            if(selectedText){
+              navigator.clipboard.writeText(selectedText);
             }
+            return false;
           }
           return true;
         });
-        terminal.write('$ '); // Display prompt initially
       },
       getCommand(terminal){
         const input = terminal.buffer.active.getLine(terminal.buffer.active.baseY + terminal.buffer.active.cursorY).translateToString().trim();
@@ -146,7 +161,7 @@ terminal.loadAddon(new WebLinksAddon());
               })
             } else if(command.includes('connectNE')){
               console.log("Inside the connect NE: ");
-              // command = "g40cli.connectNE('near_end_cli','34.100.227.168','temproot','infinera',port=2222,step=True)";
+              command = "g40cli.connectNE('near_end_cli','34.100.227.168','temproot','infinera',port=2222,step=True)";
               let data = parseCommand(command, "connect");
               console.log("Data after parse:: ", data);
               terminal.write(`connecting to ${data[0]} \r \n`);
@@ -231,6 +246,7 @@ terminal.loadAddon(new WebLinksAddon());
             })
           } else {
             // terminal.write()
+            console.log("Inside the else part:");
           }
           
         }

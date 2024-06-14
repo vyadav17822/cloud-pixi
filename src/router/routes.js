@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import UserSignin from '../components/UserSignin.vue'
 import LoadSuits from '../components/LoadSuits.vue'
 import Content from '../components/Content.vue'
+import LogWindowV from '../components/LogWindowV.vue'
 import UserSignUp from '@/components/UserSignUp.vue'
 
 
@@ -12,7 +13,7 @@ const router = createRouter({
     {
       name: 'Home',      
       path: '/',
-      component: UserSignin
+      component: LogWindowV
     },
     {
       name: 'signin',
@@ -39,6 +40,11 @@ const router = createRouter({
       // meta: {
       //   requiresAuth: true,
       // }
+    },
+    {
+      name: 'logWindow',
+      path: '/dashboard',
+      component: LogWindowV
     }
   ]
 })
