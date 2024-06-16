@@ -45,6 +45,11 @@ const router = createRouter({
       name: 'logWindow',
       path: '/dashboard',
       component: LogWindowV
+    },
+    {
+      name: 'Webshell',
+      path: '/Webshell',
+      component: Content
     }
   ]
 })

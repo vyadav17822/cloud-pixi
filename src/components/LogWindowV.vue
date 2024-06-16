@@ -191,13 +191,13 @@
 </template>
 <script>
   import { defineComponent } from "vue";
-  import Content from "./Content.vue";
+  // import Content from "./Content.vue";
   import LoadSuitsDummy from "./LoadSuitsDummy.vue";
 
   export default defineComponent({
     name: "LogWindowV",
     components: {
-      Content,
+      // Content,
       LoadSuitsDummy
     },
     data() {
@@ -213,7 +213,7 @@
     methods: {
       openWebShell(){
         const loggerURL = this.$router.resolve({name: 'Webshell'}).href;
-        window.open
+        window.open(loggerURL, '_blank');
       }
     }
   });

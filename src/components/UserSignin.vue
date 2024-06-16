@@ -53,9 +53,7 @@ import axios from 'axios';
         try {
           let url = 'http://localhost:3003/login'
           const response = await axios.post(url, { ...userLoginRequest });
-          console.log("Log response::::--- ", response);
         if (response?.data?.success) { 
-          console.log("Inside the login success");
           localStorage.setItem(
             "user",
             JSON.stringify({
