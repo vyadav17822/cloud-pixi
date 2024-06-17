@@ -150,7 +150,7 @@ terminal.loadAddon(new WebLinksAddon());
 
               console.log("Request body:: ", rb);
 
-              axios.post('http://127.0.0.1:8000/api/disconnectNE/', {...rb})
+              axios.post('http://35.192.211.225:8000/api/disconnectNE/', {...rb})
               .then(res => {
                 console.log("Response of ConnectNE:: ", res);
                 terminal.write(res.data["message"]);
@@ -176,7 +176,7 @@ terminal.loadAddon(new WebLinksAddon());
               };
 
               console.log("Request body:: ", rb);
-              axios.post('http://127.0.0.1:8000/api/connectNE/', {...rb})
+              axios.post('http://35.192.211.225:8000/api/connectNE/', {...rb})
               .then(res => {
                 console.log("Response of ConnectNE:: ", res);
                 terminal.write(res.data["\n"]);
@@ -223,7 +223,7 @@ terminal.loadAddon(new WebLinksAddon());
               };
               console.log("Request Body[sendrcv]::: ", requestBody);
               ///api/sendrcv/?Content-Type=application/json
-              axios.post('http://localhost:8000/api/sendrcv/?Content-Type=application/json', {...requestBody})
+              axios.post('http://35.192.211.225:8000/api/sendrcv/?Content-Type=application/json', {...requestBody})
               .then(res => {
                 terminal.write(res.data);
                 terminal.write('\r \n');
