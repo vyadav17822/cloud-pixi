@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="webshell-xterm">
       <!-- <h2>Shell Management</h2> -->
       <div ref="terminal"></div>
     </div>
@@ -14,7 +14,7 @@
 
 const terminal = new Terminal({
   termName: "webshell",
-  cols: 90,
+  cols: 120,
   rows: 24,
   screenKeys: true,
   convertEol: true
@@ -27,13 +27,13 @@ terminal.loadAddon(new WebLinksAddon());
     mounted() {
       this.initializeTerminal();
       this.enablePaste();
-      this.reNew();
+      // this.reNew();
     },
     methods: {
       reNew() {
         // const terminal = new Terminal();
         setInterval(() =>{
-          axios.get("http://localhost:8000/api/logs/?Content-Type=application/json").then(
+          axios.get("http://35.192.211.225:8001/api/logs/?Content-Type=application/json").then(
         (response) =>{
           console.log("----- response:: ",response);
           terminal.write(response.data.join());
@@ -69,6 +69,7 @@ terminal.loadAddon(new WebLinksAddon());
         terminal.attachCustomKeyEventHandler((key) => {
           if(key.ctrlKey && (key.key === 'v' || key.key === 'V')){
             navigator.clipboard.readText().then(text => {
+              console.log("Inside the v: text", text);
               // terminal.write(text);
               terminal.paste(text);
             }).catch(err => {
@@ -150,7 +151,7 @@ terminal.loadAddon(new WebLinksAddon());
 
               console.log("Request body:: ", rb);
 
-              axios.post('http://35.192.211.225:8000/api/disconnectNE/', {...rb})
+              axios.post('http://35.192.211.225:8001/api/disconnectNE/', {...rb})
               .then(res => {
                 console.log("Response of ConnectNE:: ", res);
                 terminal.write(res.data["message"]);
@@ -161,7 +162,7 @@ terminal.loadAddon(new WebLinksAddon());
               })
             } else if(command.includes('connectNE')){
               console.log("Inside the connect NE: ");
-              command = "g40cli.connectNE('near_end_cli','34.100.227.168','temproot','infinera',port=2222,step=True)";
+              // command = "g40cli.connectNE('near_end_cli','34.100.227.168','temproot','infinera',port=2222,step=True)";
               let data = parseCommand(command, "connect");
               console.log("Data after parse:: ", data);
               terminal.write(`connecting to ${data[0]} \r \n`);
@@ -176,7 +177,7 @@ terminal.loadAddon(new WebLinksAddon());
               };
 
               console.log("Request body:: ", rb);
-              axios.post('http://35.192.211.225:8000/api/connectNE/', {...rb})
+              axios.post('http://35.192.211.225:8001/api/connectNE/', {...rb})
               .then(res => {
                 console.log("Response of ConnectNE:: ", res);
                 terminal.write(res.data["\n"]);
@@ -223,7 +224,7 @@ terminal.loadAddon(new WebLinksAddon());
               };
               console.log("Request Body[sendrcv]::: ", requestBody);
               ///api/sendrcv/?Content-Type=application/json
-              axios.post('http://35.192.211.225:8000/api/sendrcv/?Content-Type=application/json', {...requestBody})
+              axios.post('http://35.192.211.225:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
               .then(res => {
                 terminal.write(res.data);
                 terminal.write('\r \n');
@@ -259,6 +260,9 @@ terminal.loadAddon(new WebLinksAddon());
   <style scoped>
   div {
     padding: 20px;
+  }
+  .webshell-xterm{
+    margin-top: 2%;
   }
   </style>
   

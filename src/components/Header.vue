@@ -1,14 +1,14 @@
 <template>
   <div class="header">
       <div class="background" />
-      <div class="right-menu" v-if="isLoggedIn">
+      <div class="right-menu">
         <img class="settings-icon" alt="" src="/images/settings.svg" />
         <img class="notifications-icon" alt="" src="/images/notifications.svg" />
         <img class="search-icon" alt="" src="/images/search.svg" />
-        <div class="user-name">{{userDetails}}</div>
+        <div class="user-name">{{this.userDetails}}</div>
         <img class="users-img-icon" alt="" src="/images/users-img@2x.png" />
       </div>
-      <div class="top-menu" v-if="isLoggedIn">
+      <div class="top-menu">
         <div class="file">
           <div class="highlighted" />
           <div class="file1">File</div>
@@ -30,21 +30,22 @@
   <script>
   export default {
     name: 'DashboardHeader',
-    props:{
-      isLoggedIn: {
-        type: Boolean,
-        required: true
-      },
-      userDetails: {
-        type: String,
-        required: true
-      }
-    },
+    // props:{
+    //   isLoggedIn: {
+    //     type: Boolean,
+    //     required: true
+    //   },
+    //   userDetails: {
+    //     type: String,
+    //     required: true
+    //   }
+    // },
     data() {
       return {
         username: "vyadav",
         notificationsOpen: false,
         showSidebar: false,
+        userDetails: "Ved Prakash"
       };
     },
     methods: {

@@ -84,7 +84,7 @@
     <div class="data-table">
       <!-- <component :is="currentViewComponent"></component> -->
      <!-- <Content /> -->
-     <LoadSuitsDummy />
+     <LoadSuits :loadSuiteData="loadSuiteData" />
     </div>
     <div class="folder-structure">
       <img
@@ -122,7 +122,10 @@
         <div class="gui-test-1">GUI Test 1</div>
         <div class="key-1-parent">
           <img class="key-1-icon" alt="" src="/images/key-1.svg" />
-          <div class="solution-undefined-06">Action-01</div>
+          <!-- <button class="load-app" @click="triggerFileInput">Load Suit</button> -->
+          <input type="file" ref="fileInput" @change="handleFileUpload" accept=".xlsx" style="display: none;"/>
+          <div class="solution-undefined-06"  @click="triggerFileInput">Action-02
+          <input type="file" ref="fileInput" @change="handleFileUpload" accept=".xlsx" style="display: none;"/></div>
         </div>
         <div class="parent">
           <div class="solution-undefined-06">{ }</div>
@@ -178,7 +181,7 @@
         </div>
         <div class="loadapp">
           <div class="load-app">Load App</div>
-          <img class="path-945-icon" alt="" src="/images/path-945.svg" />
+          <img class="path-945-icon" alt="" src="/path-945.svg" />
         </div>
         <div class="apps">
           <div class="help">Help</div>
@@ -192,17 +195,21 @@
 <script>
   import { defineComponent } from "vue";
   // import Content from "./Content.vue";
-  import LoadSuitsDummy from "./LoadSuitsDummy.vue";
+  // import LoadSuitsDummy from "./LoadSuitsDummy.vue";
+  import LoadSuits from "./LoadSuits.vue";
+  import * as XLSX from 'xlsx';
 
   export default defineComponent({
     name: "LogWindowV",
     components: {
       // Content,
-      LoadSuitsDummy
+      // LoadSuitsDummy
+      LoadSuits
     },
     data() {
       return {
-        currentView:'LoadSuitsDummy'
+        currentView:'LoadSuitsDummy',
+        loadSuiteData: [],
       }
     },
     computed:{
@@ -214,6 +221,46 @@
       openWebShell(){
         const loggerURL = this.$router.resolve({name: 'Webshell'}).href;
         window.open(loggerURL, '_blank');
+      },
+      triggerFileInput() {
+        this.$refs.fileInput.click();
+      },
+      handleFileUpload(event){
+        const file = event.target.files[0];
+        console.log("FIles::::::::: ", file);
+        if(file){
+          console.log("Inside the file extract: ");
+          const reader = new FileReader();
+          console.log("Reader:::::::::: ", reader);
+          reader.onload = async (event) => {
+            const data = new Uint8Array(event.target.result);
+            console.log("Data:::: ", data);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            console.log("Inside the file extract[sheetName]: ", sheetName);
+            const sheet = workbook.Sheets[sheetName];
+            console.log("Inside the file extract[sheet]: ", sheet);
+            const range = XLSX.utils.decode_range(sheet['!ref']);
+
+            let rowData = [];
+            for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+              const cellAddress = { c: 1, r: rowNum };
+              const cellRef = XLSX.utils.encode_cell(cellAddress);
+              const cell = sheet[cellRef];
+              if(cell){
+                if(!(cell.v).startsWith("#")){
+                    rowData.push([rowNum, cell.v]);
+                }
+              }
+              this.loadSuiteData = rowData;
+              // console.log("Row data after fetching from the file:: ", rowData);
+            }
+          };
+          reader.readAsArrayBuffer(file);
+          console.log("Row data::: ", this.loadSuiteData);
+        } else {
+          alert("No file found");
+        }
       }
     }
   });
