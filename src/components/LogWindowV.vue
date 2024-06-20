@@ -82,8 +82,6 @@
       <img class="property-icon" alt="" src="/images/property@2x.png" />
     </div>
     <div class="data-table">
-      <!-- <component :is="currentViewComponent"></component> -->
-     <!-- <Content /> -->
      <LoadSuits :loadSuiteData="loadSuiteData" />
     </div>
     <div class="folder-structure">
@@ -181,7 +179,7 @@
         </div>
         <div class="loadapp">
           <div class="load-app">Load App</div>
-          <img class="path-945-icon" alt="" src="/path-945.svg" />
+          <img class="path-945-icon" alt="" src="/images/path-945.svg" />
         </div>
         <div class="apps">
           <div class="help">Help</div>
@@ -194,27 +192,17 @@
 </template>
 <script>
   import { defineComponent } from "vue";
-  // import Content from "./Content.vue";
-  // import LoadSuitsDummy from "./LoadSuitsDummy.vue";
   import LoadSuits from "./LoadSuits.vue";
   import * as XLSX from 'xlsx';
 
   export default defineComponent({
     name: "LogWindowV",
     components: {
-      // Content,
-      // LoadSuitsDummy
       LoadSuits
     },
     data() {
       return {
-        currentView:'LoadSuitsDummy',
         loadSuiteData: [],
-      }
-    },
-    computed:{
-      currentViewComponent(){
-        return this.currentView === 'LoadSuitsDummy'? 'LoadSuitsDummy': 'Content';
       }
     },
     methods: {

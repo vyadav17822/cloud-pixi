@@ -17,12 +17,6 @@
     <div v-else-if="currentComponent === 'terminal'">
       <Content />
     </div>
-    <div v-else-if="currentComponent === 'signin'">
-      <UserSignin />
-    </div>
-    <div v-else-if="currentComponent === 'signup'">
-      <UserSignUp />
-    </div>
   </div>
 </template>
 
@@ -31,8 +25,6 @@
 import Header from './components/Header.vue';
 import Content from './components/Content.vue';
 import LoadSuits from './components/LoadSuits.vue';
-import UserSignUp from './components/UserSignUp.vue';
-import UserSignin from './components/UserSignin.vue';
 
 
 export default {
@@ -40,9 +32,7 @@ export default {
   components: {
     Header,
     LoadSuits,
-    Content,
-    UserSignUp,
-    UserSignin
+    Content
   },
   data(){
     return {

@@ -33,7 +33,7 @@ terminal.loadAddon(new WebLinksAddon());
       reNew() {
         // const terminal = new Terminal();
         setInterval(() =>{
-          axios.get("http://35.192.211.225:8001/api/logs/?Content-Type=application/json").then(
+          axios.get("http://localhost:8000/api/logs/?Content-Type=application/json").then(
         (response) =>{
           console.log("----- response:: ",response);
           terminal.write(response.data.join());
@@ -190,8 +190,8 @@ terminal.loadAddon(new WebLinksAddon());
                 terminal.write('\r \n');
 
                 terminal.write('------------------ \r \n');
-                terminal.write('Step:       g40cli.connect near_end_cli \r \n');
-                terminal.write('Result:     Passed \r \n');
+                terminal.write('Step:       g40cli.connect near_end_cli \n');
+                terminal.write('Result:     Passed  \n');
                 terminal.write('Details:    prompt confirmed \r \n');
                 terminal.write('------------------ \r \n');
 
@@ -224,14 +224,14 @@ terminal.loadAddon(new WebLinksAddon());
               };
               console.log("Request Body[sendrcv]::: ", requestBody);
               ///api/sendrcv/?Content-Type=application/json
-              axios.post('http://35.192.211.225:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
-              .then(res => {
-                terminal.write(res.data);
-                terminal.write('\r \n');
-              })
-              .catch(error => {
-                  terminal.write(`Error executing command: ${error}`)
-              })
+              axios.post('http://localhost:8000/api/sendrcv/?Content-Type=application/json', {...requestBody})
+              // .then(res => {
+              //   terminal.write(res.data);
+              //   terminal.write('\r \n');
+              // })
+              // .catch(error => {
+              //     terminal.write(`Error executing command: ${error}`)
+              // })
             }
         } else {
           if(command !== '$'){
