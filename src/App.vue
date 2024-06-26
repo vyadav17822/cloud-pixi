@@ -2,17 +2,17 @@
   <div id="app">
     <Header />
     <div class="btn-cls" v-if="isHidden">
-    <router-link to="/loadsuits"><button class="btn"> Load Suits</button></router-link>
+    <router-link to="/LoadSuite"><button class="btn"> Load Suite</button></router-link>
     <router-link to="/shell"><button class="btn"> Shells</button></router-link>
-    <router-link to="/signin"><button class="btn"> Signin</button></router-link>
+    <!-- <router-link to="/signin"><button class="btn"> Signin</button></router-link> -->
     <!-- <router-link to="/shell"><button class="btn"> Shells</button></router-link> -->
     <!-- <button class='btn' @click="showTerminal()"> Shell</button> -->
     <!-- <button class='btn' @click="goToSignUp()">Signup</button>
     <button class='btn' @click="goToSignin()">Signin</button> -->
     </div>
     <router-view></router-view>
-    <div v-if="currentComponent === 'loadsuits'">
-      <LoadSuits />
+    <div v-if="currentComponent === 'loadsuite'">
+      <LoadSuite/>
     </div>
     <div v-else-if="currentComponent === 'terminal'">
       <Content />
@@ -23,15 +23,15 @@
 <script>
 
 import Header from './components/Header.vue';
-import Content from './components/Content.vue';
-import LoadSuits from './components/LoadSuits.vue';
+import Content from './components/Webshell.vue';
+import LoadSuite from './components/LoadSuite.vue';
 
 
 export default {
   name: 'App',
   components: {
     Header,
-    LoadSuits,
+    LoadSuite,
     Content
   },
   data(){
@@ -41,8 +41,8 @@ export default {
     }
   },
   methods: {
-    showLoadSuits() {
-      this.currentComponent = 'loadsuits'
+    showLoadSuite() {
+      this.currentComponent = 'loadsuite'
       console.log(this.currentComponent);
     },
     showTerminal() {

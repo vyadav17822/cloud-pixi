@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import Header from '../components/Header.vue'
-import LoadSuits from '../components/LoadSuits.vue'
-import Content from '../components/Content.vue'
-import LogWindowV from '../components/LogWindowV.vue'
+import LoadSuite from '../components/LoadSuite.vue'
+import Content from '../components/Webshell.vue'
+import Dashboard from '../components/Dashboard.vue'
 
 
 const router = createRouter({
@@ -11,13 +11,13 @@ const router = createRouter({
     {
       name: 'Home',      
       path: '/',
-      component: LogWindowV
+      component: Dashboard
     },
 
     {
-      name: 'loadsuits',
-      path: '/loadsuits',
-      component: LoadSuits
+      name: 'LoadSuite',
+      path: '/LoadSuite',
+      component: LoadSuite
     },
     {
       name: 'shell',
@@ -25,9 +25,9 @@ const router = createRouter({
       component: Content
     },
     {
-      name: 'logWindow',
+      name: 'dashboard',
       path: '/dashboard',
-      component: LogWindowV
+      component: Dashboard
     },
     {
       name: 'Webshell',

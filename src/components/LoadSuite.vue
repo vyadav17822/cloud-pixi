@@ -19,7 +19,10 @@
             <tr v-for="(row, rowIndex) in loadSuiteData.slice(2)" :key="rowIndex">
               <td class="table-row-number" v-for="(cell, cellIndex) in row" :key="cellIndex">{{cell }}</td>
               <td v-if="this.rowsStatus[rowIndex] === undefined"><span class="bg-null"></span></td>
-              <td v-else-if="this.rowsStatus[rowIndex] === 'success'"><span class="bg-success" >.</span></td>
+              <td v-else-if="this.rowsStatus[rowIndex] === 'success'">
+                <div class="progress-inner" />
+                <div class="failed">Failed</div>
+              </td>
               <td v-else-if="this.rowsStatus[rowIndex] === 'failed'"><span class="bg-failed" >.</span></td>
               <!-- <span class="button-trash-icon"> <i class="fas fa-ellipsis-h"></i> </span> -->
               <td>
@@ -85,8 +88,19 @@
   </script>
   
   <style scoped>
-    .table {
-      
+    .progress-inner {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      border-radius: 5px;
+      background-color: #cf1414;
+      width: 102px;
+      height: 32px;
+    }
+    .failed {
+      position: absolute;
+      top: 7px;
+      left: 33px;
     }
     .row-title {
       /* position: absolute; */
