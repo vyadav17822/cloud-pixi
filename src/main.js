@@ -5,7 +5,7 @@
 
 import { createApp } from "vue";
 import PrimeVue from 'primevue/config';
-import "./style.css"
+// import "./style.css"
 // import Aura from "./pixi-styles";
 // import Vue from "vue";
 import App from "./App.vue";
