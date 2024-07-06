@@ -1,11 +1,12 @@
 <template>
+  <div class="data-table">
     <div class="data-table-child">
         <!-- <label class="upload-btn">
             <input type="file" @change="handleFileUpload">
             <button @click="uploadFile">Upload</button>
         </label> -->
       <div v-if="loadSuiteData" class="table-header">
-        <table class="table">
+        <table class="loadsuite-table">
           <thead>
             <tr>
               <!-- <th v-for="(cell, index) in data[0]" :key="index">{{ cell }}</th> -->
@@ -16,8 +17,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, rowIndex) in loadSuiteData.slice(2)" :key="rowIndex">
-              <td class="table-row-number" v-for="(cell, cellIndex) in row" :key="cellIndex">{{cell }}</td>
+            <tr v-for="(suite,row) in loadSuiteData" :key="row" >
+            
+              <td class="table-row-number" >{{row+1 }}</td>
+              <td  class="table-row-number">
+                <div class="loadsuite-title">{{suite.Title }}</div>
+                </td>
               <td v-if="this.rowsStatus[rowIndex] === undefined"><span class="bg-null"></span></td>
               <td v-else-if="this.rowsStatus[rowIndex] === 'success'">
                 <div class="progress-inner" />
@@ -26,20 +31,22 @@
               <td v-else-if="this.rowsStatus[rowIndex] === 'failed'"><span class="bg-failed" >.</span></td>
               <!-- <span class="button-trash-icon"> <i class="fas fa-ellipsis-h"></i> </span> -->
               <td>
-                <button class="btn btn-primary" @click="runCommand(row, rowIndex)" style="background-color: #f3f6f9;"> <i class="fa fa-play" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9;"></i></button>
+                <button class="btn btn-primary" @click="runCommand(suite)" style="background-color: #f3f6f9;"> <i class="fa fa-play" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9;"></i></button>
                 <button class="btn btn-primary" @click="showLog" style="background-color: #f3f6f9;"> <i class="fas fa-ellipsis-h" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9;"></i></button>
                </td>
-            </tr>
+              
+              </tr>
           </tbody>
         </table>
       </div>
       
     </div>
+  </div>
   </template>
   
   <script>
   // import * as XLSX from 'xlsx';
-  import axios from 'axios';
+  // import axios from 'axios';
 
   export default {
     name: 'LoadSuits',
@@ -54,31 +61,18 @@
         uploadedFile: null,
         fileToUpload: null,
         data: null,
-        rowsStatus: []
+        rowsStatus: [],
+        filteredData: []
       };
     },
     methods: {
-    
-      runCommand(row, rowIndex){
-        console.log("Data: ", row, rowIndex);
-
-        let requestBody = {
-            "username": "temproot",
-            "hostname": "10.220.192.219",
-            "port": 22,
-            "password": "infinera",
-            "interface": "CLI",
-            "handle": "show card",
-        }
-        axios.post('http://35.192.211.225:8000/api/connectNE/', requestBody)
-        .then(res => {
-            console.log(res);
-            this.rowsStatus[rowIndex] = "success"
-        })
-        .catch(error => {
-            console.log(error);
-           this.rowsStatus[rowIndex] = "failed"
-        })
+      created(){
+        console.log("Load suite data:: ", this.loadSuiteData);      
+      },
+      runCommand(suite){
+        console.log("Run suit data::: ", suite);
+        // Work on the Run Command
+        alert("Run suit by step");
       },
       showLog() {
         alert("Show Log:");
@@ -88,6 +82,19 @@
   </script>
   
   <style scoped>
+    .loadsuite-title {
+      top: 0px;
+      right: 0px;
+      line-height: 160%;
+      display: inline-block;
+      width: 404.6px;
+      height: 24px;
+      font-family: 'Poppins';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      color: #fff;
+    }
     .progress-inner {
       position: absolute;
       top: 0px;
@@ -113,7 +120,8 @@
       position: relative;
       font-family: Poppins;
       font-weight: 600;
-      color: #000;
+      color: #fff;
+      font-size: 14px;
     }
     .data-row {
       position: absolute;
@@ -165,13 +173,13 @@
     overflow-x: auto;
   }
 
-  .table {
+  .loadsuite-table {
     width: 100%;
     border-collapse: collapse;
   }
 
-  .table th,
-  .table td {
+  .loadsuite-table th,
+  .loadsuite-table td {
     padding: 8px;
     text-align: left;
     border: 1px solid #ddd;
@@ -189,10 +197,18 @@
     position: absolute;
     top: 0px;
     left: 1px;
-    background-color: #fff;
     width: 945px;
     height: 580px;
     overflow: scroll;
+  }
+  .data-table {
+    position: absolute;
+    top: 103px;
+    left: 293px;
+    width: 946px;
+    height: 580px;
+    font-size: 14px;
+    background-color: #28466a;
   }
   </style>
   

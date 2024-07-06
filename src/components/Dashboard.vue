@@ -81,9 +81,7 @@
       <img class="doorbell-icon" alt="" src="/images/doorbell@2x.png" />
       <img class="property-icon" alt="" src="/images/property@2x.png" />
     </div>
-    <div class="data-table">
      <LoadSuite :loadSuiteData="loadSuiteData" />
-    </div>
     <div class="folder-structure">
       <img
         class="background-rectangle-icon3"
@@ -92,56 +90,7 @@
       />
       <div class="folder-structure-child" />
       <div class="solution-details-01-parent">
-        <div class="solution-details-01">
-          <img class="arrow-1-1" alt="" src="/images/arrow-1-1.svg" />
-          <div class="solutions-details">Solutions Details</div>
-          <div class="add-file-1-parent">
-            <img class="add-file-1-icon" alt="" src="/images/addfile-1.svg" />
-            <img class="add-file-1-icon" alt="" src="/images/addfile-1-1.svg" />
-            <img class="refresh-1-icon" alt="" src="/images/refresh-1@2x.png" />
-            <img class="add-file-1-icon" alt="" src="/images/copy-1-1.svg" />
-          </div>
-        </div>
-        <img class="vector-icon5" alt="" src="/images/vector5.svg" />
-        <div class="solution-undefined">Solution Undefined</div>
-        <img class="vector-icon6" alt="" src="/images/vector6.svg" />
-        <div class="solution-undefined-02">Solution Undefined-02</div>
-        <img class="vector-icon7" alt="" src="/images/vector7.svg" />
-        <div class="solution-undefined-03">Solution Undefined-03</div>
-        <img class="vector-icon8" alt="" src="/images/vector8.svg" />
-        <div class="solution-undefined-04">Solution Undefined-04</div>
-        <img class="vector-icon9" alt="" src="/images/vector9.svg" />
-        <div class="solution-undefined-05">Solution Undefined-05</div>
-        <div class="arrow-1-1-parent">
-          <img class="arrow-1-11" alt="" src="/images/arrow-1-11@2x.png" />
-          <div class="solution-undefined-06">Solution Undefined-06</div>
-        </div>
-        <img class="arrow-1-12" alt="" src="/images/arrow-1-12@2x.png" />
-        <div class="gui-test-1">GUI Test 1</div>
-        <div class="key-1-parent">
-          <img class="key-1-icon" alt="" src="/images/key-1.svg" />
-          <!-- <button class="load-app" @click="triggerFileInput">Load Suit</button> -->
-          <input type="file" ref="fileInput" @change="handleFileUpload" accept=".xlsx" style="display: none;"/>
-          <div class="solution-undefined-06"  @click="triggerFileInput">Action-02
-          <input type="file" ref="fileInput" @change="handleFileUpload" accept=".xlsx" style="display: none;"/></div>
-        </div>
-        <div class="parent">
-          <div class="solution-undefined-06">{ }</div>
-          <div class="action-01">Action-02</div>
-        </div>
-        <div class="important-1-parent">
-          <img class="add-file-1-icon" alt="" src="/images/important-1.svg" />
-          <div class="solution-undefined-06">Action03</div>
-        </div>
-        <img class="line-icon" alt="" src="/images/line-2.svg" />
-        <img class="vector-icon10" alt="" src="/images/vector5.svg" />
-        <div class="solution-undefined-07">Solution Undefined-07</div>
-        <img class="vector-icon11" alt="" src="/images/vector6.svg" />
-        <div class="solution-undefined-08">Solution Undefined-08</div>
-        <img class="arrow-1-13" alt="" src="/images/arrow-1-13@2x.png" />
-        <div class="unknown-01">Unknown-01</div>
-        <img class="arrow-1-14" alt="" src="/images/arrow-1-14@2x.png" />
-        <div class="unknown-02">Unknown-02</div>
+        <LeftPane :treeData="jsonData" @emitData="handleEventData" />
       </div>
     </div>
     <div class="side-left-menu">
@@ -193,19 +142,52 @@
 <script>
   import { defineComponent } from "vue";
   import LoadSuite from "./LoadSuite.vue";
+  import LeftPane from "./LeftPane.vue";
   import * as XLSX from 'xlsx';
+  import axios from 'axios';
 
   export default defineComponent({
     name: "PixiDashboard",
+    mounted() {
+      this.getLeftPane();
+      this.$route
+    },
     components: {
-      LoadSuite
+      LoadSuite,
+      LeftPane
     },
     data() {
       return {
         loadSuiteData: [],
+        jsonData: []
       }
     },
     methods: {
+      handleEventData(data){
+        this.loadSuiteData=data;
+      },
+      convertWithParentPath(data, parentPath = '') {
+        return data.map(item => {
+          return {
+            ...item,
+            parent_path: parentPath,
+            children: item.children ? this.convertWithParentPath(item.children, `${parentPath}${item.label}/`) : []
+          };
+        });
+      },
+      getLeftPane(){
+        axios.get('http://35.192.211.225:8001/api/files/?Content-Type=application/json')
+        .then(res => {
+          console.log("Result:::: [->]", res.data, typeof res.data);
+          let finalRes = this.convertWithParentPath(res.data);
+          console.log("Final Result::: ", finalRes);
+          this.jsonData = finalRes;
+          console.log(this.jsonData);
+        })
+        .catch(error => {
+            console.log("Error in Fetching the left Pane:: ", error);
+        })
+      },
       openWebShell(){
         const loggerURL = this.$router.resolve({name: 'Webshell'}).href;
         window.open(loggerURL, '_blank');
