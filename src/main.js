@@ -4,6 +4,9 @@
 // createApp(App).mount('#app')
 
 import { createApp } from "vue";
+import PrimeVue from 'primevue/config';
+// import "./style.css"
+// import Aura from "./pixi-styles";
 // import Vue from "vue";
 import App from "./App.vue";
 import routes from './router/routes'
@@ -11,5 +14,10 @@ import routes from './router/routes'
 
 const app = createApp(App);
 app.use(routes);
-// app.use(VuelidatePlugin);
+// app.use(PrimeVue, {
+//     unstyled: true, pt: Aura
+// });
+app.use(PrimeVue, {
+    unstyled: true
+});
 app.mount("#app");

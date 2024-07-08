@@ -148,7 +148,7 @@ terminal.loadAddon(new WebLinksAddon());
             if (char === ',' && !insideQuotes) {
                 segments.push(currentSegment.trim());
                 currentSegment = '';
-            } else if (char === '"') {
+            } else if (char === '"' || char === `'`) {
                 insideQuotes = !insideQuotes;
                 currentSegment += char;
             } else {
@@ -338,15 +338,17 @@ terminal.loadAddon(new WebLinksAddon());
                 terminal.write(res.data);
             })
             .catch(error => {
-                terminal.write(`Error executing command: ${error.message}`)
+                console.log(error);
+                // terminal.write(`Error executing command: ${error.message}`)
             })
             .finally(() =>{
-                terminal.write('\r\n$ ');
+                terminal.write('\r\n ');
             })
           } else {
-            terminal.write("\n")
+            terminal.write("\r\n");
+            console.log("Inside the else part:");
           }
-        }
+        } 
       }
     }
   }
