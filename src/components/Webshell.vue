@@ -260,7 +260,7 @@ terminal.loadAddon(new WebLinksAddon());
           let sendRcvCommand = splitArray[1].trim();
           console.log("Variable name::: ", variable_name, sendRcvCommand);
           // let result = await this.executeCommand(sendRcvCommand, terminal);
-          let data = parseCommand(command, "sendRcv");
+          let data = parseCommand(sendRcvCommand, "sendRcv");
           let requestBody = {
             "command": data[1],
             "timeout": "20",
