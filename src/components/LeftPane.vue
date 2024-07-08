@@ -63,7 +63,7 @@
     }
   }
 </script>
-<style scoped>
+<style  >
   .leftpane-cls {
     overflow-x: scroll;
     height: 578px;
@@ -72,5 +72,19 @@
     font-size: 12px;
     color: #fff;
     margin-left: -22px;
+   
+  }
+  ul{
+    list-style-type: none !important;
+  }
+  button{
+    background-color:  #1a304d;
+    display: contents;
+    margin-top: 10px
+  }
+  svg{
+    color: white;
+    margin-right: 10px;
+    display: inline;
   }
 </style>
