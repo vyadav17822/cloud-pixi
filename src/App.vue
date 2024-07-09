@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Header />
+    <!-- <Menu /> -->
     <div class="btn-cls" v-if="isHidden">
     <!-- <router-link to="/LoadSuite"><button class="btn"> Load Suite</button></router-link>
     <router-link to="/shell"><button class="btn"> Shells</button></router-link> -->
@@ -23,6 +24,7 @@
 <script>
 
 import Header from './components/Header.vue';
+// import Menu from './components/Menu.vue'
 // import Webshell from './components/Webshell.vue';
 // import LoadSuite from './components/LoadSuite.vue';
 
@@ -31,6 +33,7 @@ export default {
   name: 'App',
   components: {
     Header,
+    // Menu
     // LoadSuite,
     // Webshell
   },

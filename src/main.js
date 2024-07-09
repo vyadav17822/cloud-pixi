@@ -10,9 +10,11 @@ import PrimeVue from 'primevue/config';
 // import Vue from "vue";
 import App from "./App.vue";
 import routes from './router/routes'
+import {runSuiteCommand} from './utils'
 // import {VuelidatePlugin} from "@vuelidate/core"; 
 
 const app = createApp(App);
+app.config.globalProperties.$runSuiteCommand = runSuiteCommand;
 app.use(routes);
 // app.use(PrimeVue, {
 //     unstyled: true, pt: Aura

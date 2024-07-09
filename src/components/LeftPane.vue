@@ -31,11 +31,14 @@
     methods: {
       customEvent(data){
         console.log(data);
+        this.filteredData = [];
         for (let i=0;i<data.length;i++){
           if(data[i].Title!=null && data[i].Code!=null){
+            Object.assign(data[i], {status: "0"});
             this.filteredData.push(data[i]);
           }
         }
+        
         this.$emit('emitData',this.filteredData);
       },
       onNodeSelect(node) {
@@ -60,19 +63,21 @@
        
       },
  
-    }
+    },
+    updated(){
+      this.filteredData = [];
+    },
   }
 </script>
-<style  >
+<style>
   .leftpane-cls {
-    overflow-x: scroll;
+    overflow-x: auto;
     height: 578px;
     font-style: normal;
     font-weight: 100;
     font-size: 12px;
     color: #fff;
     margin-left: -22px;
-   
   }
   ul{
     list-style-type: none !important;
@@ -86,5 +91,9 @@
     color: white;
     margin-right: 10px;
     display: inline;
+    cursor: pointer;
+  }
+  span {
+    cursor: pointer;
   }
 </style>

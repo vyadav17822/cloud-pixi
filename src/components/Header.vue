@@ -2,6 +2,7 @@
   <div class="header">
       <div class="background" />
       <div class="right-menu">
+        <!-- <ThemeSwitcher /> -->
         <img class="settings-icon" alt="" src="/images/settings.svg" />
         <img class="notifications-icon" alt="" src="/images/notifications.svg" />
         <img class="search-icon" alt="" src="/images/search.svg" />
@@ -28,8 +29,12 @@
 </template>
   
   <script>
+  // import ThemeSwitcher from './ThemeSwitcher.vue';
   export default {
     name: 'DashboardHeader',
+    components: {
+      // ThemeSwitcher
+    },
     data() {
       return {
         notificationsOpen: false,

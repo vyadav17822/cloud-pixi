@@ -95,17 +95,17 @@
     </div>
     <div class="side-left-menu">
       <div class="side-left-menu-child" />
-      <!-- <img class="abort-icon" alt="" src="/images/abort@2x.png" /> -->
-      <div class="abort-icon"><i class="fa-solid fa-ban"></i></div>
+      <div class="abort-icon" ><span class="tooltiptext">Abort Suite</span><i class="fa-solid fa-ban"></i></div>
       <!-- <img class="pause-icon" alt="" src="/images/pause@2x.png" /> -->
-      <div class="pause-icon"><i class="fa-solid fa-pause"></i></div>
+       <b-tooltip target="button-1" title="Online!"></b-tooltip>
+      <div class="pause-icon" ><span class="tooltiptext">Pause Suite</span><i class="fa-solid fa-pause"></i></div>
       <!-- <img class="restart-icon" alt="" src="/images/restart@2x.png" /> -->
-      <div class="restart-icon"><i class="fa fa-refresh" aria-hidden="true"></i></div>
+      <div class="restart-icon" ><span class="tooltiptext">Restart Suite</span><i class="fa fa-refresh" aria-hidden="true"></i></div>
       <!-- <img class="run-suite-icon" alt="" src="/images/run-suite@2x.png" /> -->
-      <div class="run-suite-icon"><i class="fas fa-running"></i></div>
-      <img class="logs-icon" alt="" src="/images/logs@2x.png" />
-      <img class="explore-icon" alt="" src="/images/explore@2x.png" />
-      <button style="background-color: #001733; color: white;" @click="openWebShell" target="_blank" ><div class="terminal-icon"><i class="fa-solid fa-terminal"></i></div></button>
+      <div class="run-suite-icon"><span class="tooltiptext">Run Suite</span><i class="fas fa-running" @click ="runSuite"></i></div>
+      <div class="logs1-icon"><span class="tooltiptext">Logs</span><img class="logs-icon" alt="" src="/images/logs@2x.png" /></div>
+      <div class="explore1-icon"><span class="tooltiptext">Explore</span><img class="explore-icon" alt="" src="/images/explore@2x.png"  /></div>
+      <button style="background-color: #001733; color: white;" @click="openWebShell" target="_blank" ><div class="terminal-icon"><span class="tooltiptext">Open WebShell</span><i class="fa-solid fa-terminal"></i></div></button>
     </div>
     <div class="sub-header">
       <div class="sub-header-child" />
@@ -140,13 +140,13 @@
   </div>
 </template>
 <script>
-  import { defineComponent } from "vue";
+  // import { defineComponent } from "vue";
   import LoadSuite from "./LoadSuite.vue";
   import LeftPane from "./LeftPane.vue";
   import * as XLSX from 'xlsx';
   import axios from 'axios';
 
-  export default defineComponent({
+  export default ({
     name: "PixiDashboard",
     mounted() {
       this.getLeftPane();
@@ -187,6 +187,29 @@
         .catch(error => {
             console.log("Error in Fetching the left Pane:: ", error);
         })
+      },
+      async runSuite(){
+        console.log("Inside the run suite");
+        try {
+          for(let i = 0; i < this.loadSuiteData.length; i++){
+            console.log(this.loadSuiteData[i]);
+            try {
+              this.loadSuiteData[i].status = "1";
+              await this.$runSuiteCommand(this.loadSuiteData[i].Code);
+              console.log("Status:: change: ");
+              this.loadSuiteData[i].status = "2";
+            } catch (error) {
+              this.loadSuiteData[i].status = "3";
+            }
+          }
+          // this.loadSuiteData.map(lsd => {
+          //   console.log("Lsd: ", lsd);
+          //   this.runSuite(lsd.Code)
+          // })
+        } catch (error) {
+          console.log("Error: ", error);
+        }
+       
       },
       openWebShell(){
         const loggerURL = this.$router.resolve({name: 'Webshell'}).href;
@@ -237,6 +260,139 @@
   });
 </script>
 <style scoped>
+.abort-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.abort-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 20px;
+}
+.pause-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.pause-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 20px;
+}
+.restart-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.restart-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 20px;
+}
+.run-suite-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.run-suite-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 20px;
+}
+.terminal-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.terminal-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 20px;
+}
+ 
+.logs1-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.logs1-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 66px;
+  left: 35px;
+}
+.logs1-icon {
+  cursor: pointer;
+}
+.explore1-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.explore1-icon .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+ 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 30px;
+  left: 35px;
+}
+.explore1-icon{
+  cursor: pointer;
+}
   .log-window-v1-child {
     position: absolute;
     top: 654px;
@@ -1010,16 +1166,6 @@
     width: 160.2px;
     height: 18px;
   }
-  .table-header {
-    position: absolute;
-    width: calc(100% - 1px);
-    top: 34px;
-    right: 0px;
-    left: 1px;
-    height: 28px;
-    font-size: 12px;
-    color: #b5b5c3;
-  }
   .group-child3 {
     position: absolute;
     height: 100%;
@@ -1428,6 +1574,7 @@
     width: 18px;
     height: 18px;
     object-fit: cover;
+    cursor: pointer;
   }
   .pause-icon {
     position: absolute;
@@ -1436,6 +1583,7 @@
     width: 18px;
     height: 18px;
     object-fit: cover;
+    cursor: pointer;
   }
   .restart-icon {
     position: absolute;
@@ -1444,6 +1592,7 @@
     width: 18px;
     height: 18px;
     object-fit: cover;
+    cursor: pointer;
   }
   .run-suite-icon {
     position: absolute;
@@ -1452,6 +1601,7 @@
     width: 18px;
     height: 18px;
     object-fit: cover;
+    cursor: pointer;
   }
   .logs-icon {
     position: absolute;
@@ -1476,6 +1626,7 @@
     width: 18px;
     height: 18px;
     object-fit: cover;
+    cursor: pointer;
   }
   .side-left-menu {
     position: absolute;
