@@ -44,7 +44,7 @@
   
   <script>
   // import * as XLSX from 'xlsx';
-  import axios from 'axios';
+  // import axios from 'axios';
 
   export default {
     name: 'LoadSuits',
