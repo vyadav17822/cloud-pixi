@@ -81,7 +81,7 @@
       <img class="doorbell-icon" alt="" src="/images/doorbell@2x.png" />
       <img class="property-icon" alt="" src="/images/property@2x.png" />
     </div>
-     <LoadSuite :loadSuiteData="loadSuiteData" />
+     <LoadSuite :loadSuiteData="loadSuiteData" :isRunSuitClicked="isRunSuitClicked" />
     <div class="folder-structure">
       <img
         class="background-rectangle-icon3"
@@ -159,7 +159,8 @@
     data() {
       return {
         loadSuiteData: [],
-        jsonData: []
+        jsonData: [],
+        isRunSuitClicked: false
       }
     },
     methods: {
@@ -189,27 +190,27 @@
         })
       },
       async runSuite(){
-        console.log("Inside the run suite");
         try {
+          this.isRunSuitClicked = true;
           for(let i = 0; i < this.loadSuiteData.length; i++){
             console.log(this.loadSuiteData[i]);
             try {
               this.loadSuiteData[i].status = "1";
-              await this.$runSuiteCommand(this.loadSuiteData[i].Code);
-              console.log("Status:: change: ");
-              this.loadSuiteData[i].status = "2";
+              let result = await this.$runSuiteCommand(this.loadSuiteData[i].Code);
+              console.log("Status:: change: ", result);
+              if(result.status == "200"){
+                this.loadSuiteData[i].status = "2";
+              } else {
+                this.loadSuiteData[i].status = "3";
+              }
             } catch (error) {
               this.loadSuiteData[i].status = "3";
             }
           }
-          // this.loadSuiteData.map(lsd => {
-          //   console.log("Lsd: ", lsd);
-          //   this.runSuite(lsd.Code)
-          // })
+          this.isRunSuitClicked = false;
         } catch (error) {
           console.log("Error: ", error);
-        }
-       
+        }    
       },
       openWebShell(){
         const loggerURL = this.$router.resolve({name: 'Webshell'}).href;

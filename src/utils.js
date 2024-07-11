@@ -54,7 +54,7 @@ export async function runSuiteCommand(command){
         if (char === ',' && !insideQuotes) {
             segments.push(currentSegment.trim());
             currentSegment = '';
-        } else if (char === '"' || `'`) {
+        } else if (char === '"' || char === `'`) {
             insideQuotes = !insideQuotes;
             currentSegment += char;
         } else {
@@ -159,6 +159,7 @@ export async function runSuiteCommand(command){
         let matches = parsedArray[1].match(/^([^[]+)\['([^']+)'\](?:\['([^']+)'\])?$/);
         if (!matches) {
           console.log("Invalid input string format");
+          throw new Error('Invalid input string format');
         }
         let [, variable, key1, key2] = matches;
         let resultArray = [variable, key1];
@@ -177,8 +178,6 @@ export async function runSuiteCommand(command){
           console.log("Compare pair payload:::: ", compare_pair_payload);
           let res = await axios.post("http://35.192.211.225:8001/api/compare_pair/?Content-Type=application/json", {... compare_pair_payload})
           return res;
-          // .then(res => res)
-          // .catch(err => err)
         }
      } else {
        console.log("Nothing found");
