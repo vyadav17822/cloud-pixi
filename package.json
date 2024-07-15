@@ -19,6 +19,7 @@
     "child_process": "^1.0.2",
     "core-js": "^3.8.3",
     "mdb-vue-ui-kit": "^5.0.0",
+    "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
     "vue": "^3.2.13",
     "vue-loader": "^17.4.2",

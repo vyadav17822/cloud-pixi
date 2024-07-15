@@ -15,6 +15,7 @@ import {runSuiteCommand} from './utils'
 
 const app = createApp(App);
 app.config.globalProperties.$runSuiteCommand = runSuiteCommand;
+localStorage.setItem("isSuiteAborted", false);
 app.use(routes);
 // app.use(PrimeVue, {
 //     unstyled: true, pt: Aura

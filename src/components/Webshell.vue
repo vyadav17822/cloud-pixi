@@ -34,7 +34,7 @@ export default {
       setInterval(() =>{
         axios.get("http://35.192.211.225:8001/api/logs/?Content-Type=application/json").then(
       (response) =>{
-        console.log("----- response:: ",response);
+        //console.log("----- response:: ",response);
         terminal.write(response.data.join());
       }).catch(error =>{
         console.log(error);
@@ -68,7 +68,7 @@ export default {
       terminal.attachCustomKeyEventHandler((key) => {
         if(key.ctrlKey && (key.key === 'v' || key.key === 'V')){
           navigator.clipboard.readText().then(text => {
-            console.log("Inside the v: text", text);
+            //console.log("Inside the v: text", text);
             terminal.write(text);
             // terminal.paste(text);
           }).catch(err => {
@@ -87,7 +87,7 @@ export default {
     },
     getCommand(terminal){
       const input = terminal.buffer.active.getLine(terminal.buffer.active.baseY + terminal.buffer.active.cursorY).translateToString().trim();
-      console.log("Input: ", input);
+      //console.log("Input: ", input);
       return input.startsWith('$')? input.slice(1): input;
     },
     async executeCommand(command, terminal) {
@@ -105,7 +105,7 @@ export default {
         else if(type === 'comparePairs')
           paramsString = command.slice(13, -1);
 
-        console.log("Params String: ", paramsString);
+        //console.log("Params String: ", paramsString);
         // let arr = paramsString.split(",");
         // console.log("Data in arr: ", arr);
         function splitParams(paramsString) {
@@ -132,7 +132,7 @@ export default {
           return result;
         }  
         const args = splitParams(paramsString);
-        console.log("Args after split:: ", args);
+        //console.log("Args after split:: ", args);
         return args;
       }
 
@@ -175,7 +175,7 @@ export default {
            "step": data[5].split("=")[1] === "True"
           };
 
-            console.log("Request body:: ", rb);
+            //console.log("Request body:: ", rb);
 
             axios.post('http://35.192.211.225:8001/api/disconnectNE/', {...rb})
             .then(res => {
@@ -187,7 +187,7 @@ export default {
                 terminal.write(`${error.message}`)
             })
           } else if(command.includes('connectNE')){
-            console.log("Inside the connect NE: ");
+            //console.log("Inside the connect NE: ");
             // command = "g40cli.connectNE('near_end_cli','34.100.227.168','temproot','infinera',port=2222,step=True)";
             let data = parseCommand(command, "connect");
             terminal.write(`connecting to ${data[0]} \r \n`);
@@ -202,10 +202,10 @@ export default {
              "step": "True"
             };
 
-            console.log("Request body:: ", rb);
+            //console.log("Request body:: ", rb);
             axios.post('http://35.192.211.225:8001/api/connectNE/', {...rb})
             .then(res => {
-              console.log("Response of ConnectNE:: ", res);
+              //console.log("Response of ConnectNE:: ", res);
               terminal.write(res.data["\n"]);
               terminal.write('\n');
               terminal.write(res.data["show software-load"]);
@@ -234,7 +234,7 @@ export default {
           } else if(command.includes('sendRcv') && command.startsWith("g40cli")) {
             // command = "g40cli.sendRcv('near_end_cli','add -mf degree-1 ')";
             let data = parseCommand(command, "sendRcv");
-            console.log("Parsed Data::: ", data);
+           //console.log("Parsed Data::: ", data);
             let requestBody = {
               "command": data[1],
               "timeout": "20",
@@ -258,7 +258,7 @@ export default {
         let splitArray = command.split("=");
         let variable_name = splitArray[0].trim();
         let sendRcvCommand = splitArray[1].trim();
-        console.log("Variable name::: ", variable_name, sendRcvCommand);
+        //console.log("Variable name::: ", variable_name, sendRcvCommand);
         // let result = await this.executeCommand(sendRcvCommand, terminal);
         let data = parseCommand(sendRcvCommand, "sendRcv");
         let requestBody = {
@@ -283,23 +283,23 @@ export default {
         let arr = command.split("=");
         //xconState1 = g40cli.retDataToTables(showXcon1)
         let retData = parseCommand(arr[1].trim(), "retDataToTables");
-        console.log("Ret data [parsed]:: ", retData);
+        //console.log("Ret data [parsed]:: ", retData);
         let getLSData = localStorage.getItem(retData); 
-        console.log("Fetched Localhost Data:::", getLSData, typeof getLSData);
+        //console.log("Fetched Localhost Data:::", getLSData, typeof getLSData);
         let requestBody = {
           "sendRcvData": '' + getLSData
         };
-        console.log("Request Body[sendRcv]: ", requestBody);
+        //console.log("Request Body[sendRcv]: ", requestBody);
         axios.post('http://35.192.211.225:8001/api/retDataToTab/?Content-Type=application/json', {...requestBody})
         .then(res => {
-          console.log("Result of retDataToTables::: ", res, typeof res);
+          //console.log("Result of retDataToTables::: ", res, typeof res);
           localStorage.setItem(arr[0].trim(), JSON.stringify(res.data)); 
           terminal.write(JSON.stringify(res.data));
           terminal.write('\n');
         })
       } else if(command.startsWith("comparePairs")){
         let parsedArray = parseCompairPair(command);
-        console.log("Parsed Array::: ", parsedArray);
+        //console.log("Parsed Array::: ", parsedArray);
         // let a = parsedArray[1].split("[");
         let matches = parsedArray[1].match(/^([^[]+)\['([^']+)'\](?:\['([^']+)'\])?$/);
         if (!matches) {
@@ -310,19 +310,19 @@ export default {
         if (key2) {
           resultArray.push(key2);
         }
-        console.log("Result array:::: ", resultArray);
+        //console.log("Result array:::: ", resultArray);
         let getFromLS = JSON.parse(localStorage.getItem(resultArray[0]));
-        console.log("Get From lS: ", getFromLS);
+        //console.log("Get From lS: ", getFromLS);
         if(getFromLS){
           let compare_pair_payload = {
             "stash": "notStash",
             "Compare_input": getFromLS[resultArray[1]][resultArray[2]],
             "Compare_result": parsedArray[2].slice(1,-1)
           }
-          console.log("Compare pair payload:::: ", compare_pair_payload);
+          //console.log("Compare pair payload:::: ", compare_pair_payload);
           axios.post("http://35.192.211.225:8001/api/compare_pair/?Content-Type=application/json", {... compare_pair_payload})
           .then(res => {
-            console.log("Res:::: ", res);
+            //console.log("Res:::: ", res);
             terminal.write(res.data);
             terminal.write('\n');
           })
@@ -346,7 +346,7 @@ export default {
           })
         } else {
           terminal.write("\r\n");
-          console.log("Inside the else part:");
+          //console.log("Inside the else part:");
         }
       }
     }
@@ -362,4 +362,3 @@ div {
   margin-top: 2%;
 }
 </style>
-
