@@ -1,10 +1,11 @@
 <template>
   <Header />
+  <Toast />
   <SideMenu @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" />
   <LeftPaneView @sendData="sendDatatoLoadSuite" />
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
-    :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" />
-  <LogWindow />
+  :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" />
+  <LogWindow :showLogsEnabled="showLogsEnabled"/>
 </template>
 <script>
 import Header from "./Header.vue";
@@ -13,6 +14,7 @@ import SideMenu from "./SideMenu.vue";
 import LoadSuite from "./LoadSuite.vue";
 import LogWindow from "./LogWindow.vue";
 import { defineComponent } from "vue";
+//import FileUploadModal from "./FileUploadModal.vue";
 // import LoadSuite from "./LoadSuite.vue";
 //import LeftPane from "./LeftPane.vue";
 import * as XLSX from "xlsx";
@@ -35,6 +37,7 @@ export default defineComponent({
     LeftPaneView,
     LoadSuite,
     LogWindow,
+    //FileUploadModal,
   },
   data() {
     return {
@@ -70,11 +73,19 @@ export default defineComponent({
       //console.log("Inside the run suite");
 
       try {
-        for (let i = 0; i < this.loadSuiteData.length; i++) {
+        let startIndex = 0;
+        let isAborted = localStorage.getItem("isSuiteAborted");
+        let isAbortOnFailSelected = localStorage.getItem('abortOnFail');
+        let isPauseOnFailSelected = localStorage.getItem('pauseOnFail');
+        if(isPauseOnFailSelected === 'true'){
+          startIndex = localStorage.getItem('pauseOnFailIndex')
+        }
+        for (let i = startIndex; i < this.loadSuiteData.length; i++) {
+          localStorage.setItem('pauseOnFailIndex', 0);
           //console.log(this.loadSuiteData[i]);
-          let isAborted = localStorage.getItem("isSuiteAborted");
+         
             if (isAborted === 'true') {
-              alert("Aborted Successfully");
+              this.show();
               break;
             }
 
@@ -91,9 +102,20 @@ export default defineComponent({
               this.loadSuiteData[i].status = "2";
             } else {
               this.loadSuiteData[i].status = "3";
+              if(isAbortOnFailSelected === 'true'){
+                break;
+              } 
+              if( isPauseOnFailSelected  === 'true'){
+                localStorage.setItem('pauseOnFailIndex', i+1);
+                break;
+              }
             }
+
           } catch (error) {
             this.loadSuiteData[i].status = "3";
+            if(isAbortOnFailSelected === 'true'){
+              break;
+            }
           }
         }
       } catch (error) {
@@ -101,6 +123,9 @@ export default defineComponent({
       }
       localStorage.setItem("isSuiteAborted",false);
       this.isRunSuiteClicked = false;
+    },
+    show() {
+      this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Aborted Successfully', life: 3000 });
     },
     sendDatatoLoadSuite(data) {
       this.loadSuiteData = data;
@@ -673,7 +698,7 @@ export default defineComponent({
 
 .data-row-03 {
   position: absolute;
-  width: calc(100% - 1px);
+  width: 100%;
   top: 171px;
   right: 0px;
   left: 1px;
@@ -682,7 +707,7 @@ export default defineComponent({
 
 .data-row-02 {
   position: absolute;
-  width: calc(100% - 1px);
+  width: 100%;
   top: 120px;
   right: 0px;
   left: 1px;
@@ -731,7 +756,7 @@ export default defineComponent({
 
 .data-row-01 {
   position: absolute;
-  width: calc(100% - 1px);
+  width: 100%;
   top: 70px;
   right: 0px;
   left: 1px;
@@ -1552,7 +1577,7 @@ export default defineComponent({
 
 .header {
   position: absolute;
-  width: calc(100% + 1px);
+  width: 100%;
   top: 0px;
   right: -1px;
   left: 0px;

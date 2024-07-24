@@ -1,42 +1,131 @@
 <template>
   <div class="header">
-      <div class="background" />
-      <div class="right-menu">
-        <img class="settings-icon" alt="" src="/images/settings.svg" />
-        <img class="notifications-icon" alt="" src="/images/notifications.svg" />
-        <img class="search-icon" alt="" src="/images/search.svg" />
-        <div class="user-name">Ved Prakash</div>
-        <img class="users-img-icon" alt="" src="/images/users-img@2x.png" />
-      </div>
-      <div class="top-menu">
-        <div class="file">
-          <div class="highlighted" />
-          <div class="file1">File</div>
-          <img class="path-944-icon" alt="" src="/images/path-944.svg" />
-        </div>
-        <div class="loadapp">
-          <div class="load-app">Load App</div>
-          <img class="path-945-icon" alt="" src="/images/path-945.svg" />
-        </div>
-        <div class="apps">
-          <div class="help">Help</div>
-          <img class="chevron-down-icon" alt="" src="/images/chevron-down@2x.png" />
-        </div>
-      </div>
-      <img class="logo-icon" alt="" src="/images/logo@2x.png" />
+    <div class="background" />
+    <div class="right-menu">
+      <img class="settings-icon" alt="" src="/images/settings.svg" />
+      <img class="notifications-icon" alt="" src="/images/notifications.svg" />
+      <img class="search-icon" alt="" src="/images/search.svg" />
+      <div class="user-name">Ved Prakash</div>
+      <img class="users-img-icon" alt="" src="/images/users-img@2x.png" />
     </div>
+    <div class="top-menu">
+      <div class="file">
+        <div class="highlighted" />
+        <div class="file1" @click="openModal()">File</div>
+        <img class="path-944-icon" alt="" src="/images/path-944.svg" />
+
+      </div>
+      <div class="loadapp">
+        <div class="load-app">Load App</div>
+        <img class="path-945-icon" alt="" src="/images/path-945.svg" />
+      </div>
+      <div class="apps">
+        <div class="help">Help</div>
+        <img class="chevron-down-icon" alt="" src="/images/chevron-down@2x.png" />
+      </div>
+    </div>
+    <img class="logo-icon" alt="" src="/images/logo@2x.png" />
+  </div>
+  <div class="card flex justify-center">
+    <Dialog v-model:visible="visible" modal header="Upload Test Suite" :style="{ width: '32rem' }">
+      <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Select Files to be uploaded</span>
+
+      <div class="flex items-center gap-4 mb-4" style="margin-top:1.5rem">
+
+        <label for="username" class="font-semibold w-24">Folder</label>
+
+        <Dropdown v-model="selectedfolder" :options="folder" optionLabel="name" placeholder="Select a Folder"
+          class="w-full md:w-14rem" style="margin-left: 90px" />
+
+      </div>
+
+      <div class="flex items-center gap-4 mb-6" style="display:inline-flex">
+
+        <label for="files" class="font-semibold " style="width: 110px">Test Suite File</label>
+        <!-- <label for="formFileMultiple" class = "font-semibold w-24">Test Suite</label>
+              <input type="file" id="formFileMultiple" multiple name ="files"> -->
+
+        <input type="file" ref="fileupload" name="files" multiple @change="checkFile" style="margin-left:5px;">
+
+      </div>
+
+      <div class="button-div">
+        <button @click="closeModal" type="button" class="btn btn-secondary">
+          Cancel
+        </button>
+
+        <button type="button" class="btn btn-primary" :disabled="!fileSelected" @click="customBase64Uploader()">
+          Upload
+        </button>
+
+
+      </div>
+    </Dialog>
+  </div>
 </template>
   
   <script>
+  import axios  from 'axios';
   export default {
     name: 'DashboardHeader',
+    components:{
+      
+    },
     data() {
       return {
         notificationsOpen: false,
-        showSidebar: false
+        showSidebar: false,
+        visible:false,
+        selectedfolder:String,
+        fileSelected: false,
+        folder:[ { name: 'G30', code: 'g30' }, { name: 'G40', code: 'g40' },],
+        files: []
       };
     },
     methods: {
+      openModal() {
+        this.visible = true;
+        this.fileSelected = false;
+        this.selectedfolder = "";
+      },
+      closeModal() {
+        this.visible = false;
+      },
+      checkFile() {
+
+        if (this.$refs.fileupload.files.length == 2) {
+          console.log(this.$refs.fileupload.files[0]);
+          this.fileSelected = true;
+          return true;
+        } else {
+          this.fileSelected = false;
+          this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Please Select 2 Files', life: 5000 });
+        }
+
+      },
+      async customBase64Uploader() {
+        console.log(this.selectedfolder);
+        const file1 = this.$refs.fileupload.files[0];
+        const file2 = this.$refs.fileupload.files[1];
+        console.log(file1);
+        console.log(file2);
+        const formData = new FormData();
+        formData.append('file1', file1);
+        formData.append('file2', file2)
+        //formData.append('file', file2);
+        formData.append('filename1', file1.name);
+        formData.append('filename2', file2.name);
+        formData.append('folder', this.selectedfolder.code + '/cli');
+        formData.append('test_suite_uuid', '12345678-1234-5678-1234-567812345679');
+        formData.append('userid_uuid', 'user123');
+        const headers = { 'Content-Type': 'multipart/form-data' };
+        console.log(formData);
+        axios.post('http://localhost:8000/api/upload_with_structure/', formData, { headers }).then((res) => {
+          console.log(res.data); // binary representation of the file
+          console.log(res.status); // HTTP status
+        });
+        this.visible = false;
+      },
       toggleNotifications() {
         this.notificationsOpen = !this.notificationsOpen;
         // logic to toggle notifications
@@ -54,7 +143,7 @@
   <style scoped>
   .header {
     position: absolute;
-    width: calc(100% + 1px);
+    width: 100%;
     top: 0px;
     right: -1px;
     left: 0px;
@@ -71,6 +160,10 @@
     left: 0px;
     background-color: #1b1b28;
     height: 65px;
+  }
+
+  .button-div{
+    float: right
   }
   
   .right-menu {
@@ -161,6 +254,7 @@
     left: 34.35px;
     display: inline-block;
     width: 21.6px;
+    cursor: pointer;
   }
   .path-944-icon {
     position: absolute;
@@ -174,6 +268,14 @@
     position: absolute;
     top: 23px;
     left: 126px;
+    width: 78px;
+    height: 18px;
+  }
+
+  .fileupload {
+    position: absolute;
+    top: 23px;
+    left: 300px;
     width: 78px;
     height: 18px;
   }
@@ -293,4 +395,3 @@
     background-color: #ddd;
   }
   </style>
-  

@@ -1,7 +1,7 @@
 <template>
     <div class="side-left-menu">
       <!-- <img class="abort-icon" alt="" src="/images/abort@2x.png" /> -->
-      <div class="abort-icon" ><span class="tooltiptext" >Abort Suite</span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;" @click="abortSuite"></i></div>
+      <div class="abort-icon" :disabled="this.isRunSuiteStarted "><span class="tooltiptext" >Abort Suite</span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;" @click="abortSuite"></i></div>
       <!-- <img class="pause-icon" alt="" src="/images/pause@2x.png" /> -->
       <div class="pause-icon" ><span class="tooltiptext">Pause Suite</span><i class="fa-solid fa-pause" style="color:white;font-size: 20px;"></i></div>
       <!-- <img class="restart-icon" alt="" src="/images/restart@2x.png" /> -->
@@ -11,6 +11,7 @@
       <div class="logs1-icon"><span class="tooltiptext">Logs</span><img class="logs-icon" alt="" src="/images/logs@2x.png" @click="handleShowLogs"/></div>
       <div class="explore1-icon"><span class="tooltiptext">Explore</span><img class="explore-icon" alt="" src="/images/explore@2x.png"  /></div>
       <div class="terminal-icon" @click="openWebShell" target="_blank" style="background-color: #001733; color: white;" ><span class="tooltiptext">Open WebShell</span><i class="fa-solid fa-terminal" style="font-size: 20px;"></i></div>
+      <div class="config-icon" @click="openConfig()" style="background-color: #001733; color: white;"><span class="tooltiptext">Config</span><i class="fa-solid fa-gears" style="font-size: 20px;"></i></div>
     </div>
     <div class="sub-header">
       <div class="sub-header-child" >
@@ -18,6 +19,35 @@
         </div>
       
     </div>
+    <div class="card flex justify-center">
+    <Dialog v-model:visible="visible" modal header="Config Settings" :style="{ width: '32rem', height: '15rem' }">
+      <div class="form-check form-switch">
+        <input class="form-check-input form-config-toggle" ref="pauseonfail" type="checkbox" role="switch" v-model="pauseOnFail" :checked="pauseOnFail">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Pause on Fail</label>
+      </div>
+      <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Abort on Fail</span> -->
+      <div class="form-check form-switch">
+        <input class="form-check-input form-config-toggle" ref="abortonfail" type="checkbox" role="switch" v-model="abortOnFail" :checked="abortOnFail">
+        <label class="form-check-label" for="flexSwitchAbortOnFail">Abort on Fail</label>
+      </div>
+      <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Single step</span> -->
+      <div class="form-check form-switch">
+        <input class="form-check-input form-config-toggle" ref="singleStep" type="checkbox" role="switch" v-model="singleStep" :checked="singleStep">
+        <label class="form-check-label" for="flexSwitchSingleStep">Single step</label>
+      </div>
+      <div class="button-div" style="margin-top: 9px;">
+        <button @click="closeConfig" type="button" class="btn btn-secondary">
+          Cancel
+        </button>
+
+        <button type="button" class="btn btn-primary" @click="saveConfigSettings()" style="margin-left: 10px;">
+          Save
+        </button>
+
+
+      </div>
+    </Dialog>
+  </div>
 </template>
 
 <script>
@@ -28,7 +58,12 @@ import 'primeicons/primeicons.css'
       return {
         showActionPane:true,
         showLogs:true,
-        runSuite:true
+        runSuite:true,
+        isRunSuiteStarted: false,
+        visible: false,
+        pauseOnFail: false,
+        abortOnFail: false,
+        singleStep: false
       };
     },
     methods: {
@@ -37,6 +72,7 @@ import 'primeicons/primeicons.css'
         window.open(loggerURL, '_blank');
       },
       handleShowLogs(){
+        this.isRunSuiteStarted = true;
         if (this.showLogs===false){
           this.showLogs=true
         }
@@ -60,102 +96,33 @@ import 'primeicons/primeicons.css'
       }
         this.$emit("showActionPanel",this.showActionPane);
       },
+      openConfig(){
+        this.visible = true;
+        this.pauseOnFail = (localStorage.getItem("pauseOnFail") == 'true'? true : false);
+        this.abortOnFail = (localStorage.getItem("abortOnFail") == 'true' ? true : false);
+        this.singleStep = (localStorage.getItem("singleStep") == 'true' ? true : false);
+      },
+      saveConfigSettings(){
+        localStorage.setItem('pauseOnFail', this.pauseOnFail);
+        localStorage.setItem('abortOnFail', this.abortOnFail);
+        localStorage.setItem('singleStep', this.singleStep);
+        this.visible = false;
+        this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Config setting changed successfully', life: 3000 });
+      },
+      closeConfig(){
+        this.visible = false;
+      },
     },
   };
 </script>
 
 <style scoped>
-  .log-window-v1-child {
-    position: absolute;
-    top: 654px;
-    left: 1239px;
-    width: 261px;
-    height: 29px;
+  :deep(.form-config-toggle) {
+    background-color: #cdc1c1 !important;
   }
-  .log-window-v1-item {
-    position: absolute;
-    top: 103px;
-    left: 1239px;
-    background-color: #1a304d;
-    width: 26px;
-    height: 29px;
-  }
-  .vikashinivikas-mi-notebook-ho {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    font-weight: 600;
-    color: #b8f171;
-  }
+
   .span {
     color: #e3e3e3;
-  }
-  .desktopvinitodomy-project {
-    position: absolute;
-    top: 0px;
-    left: 324px;
-    font-weight: 500;
-    color: #80baff;
-  }
-  .na-version {
-    position: absolute;
-    top: 23px;
-    left: 0px;
-    font-weight: 500;
-  }
-  .you-need-to {
-    position: absolute;
-    top: 47px;
-    left: 0px;
-    font-weight: 500;
-  }
-  .vikashinivikas-mi-notebook-ho-parent {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 534px;
-    height: 65px;
-  }
-  .vikashinivikas-mi-notebook-ho1 {
-    position: relative;
-    font-weight: 600;
-  }
-  .desktopvinitodomy-project1 {
-    position: relative;
-    font-weight: 500;
-    color: #80baff;
-  }
-  .vikashinivikas-mi-notebook-ho-group {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 3px;
-  }
-  .frame-wrapper {
-    width: 531px;
-    position: relative;
-    height: 18px;
-  }
-  .group-wrapper {
-    position: absolute;
-    top: 70px;
-    left: 0px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    color: #b8f171;
-  }
-  .group-parent {
-    position: absolute;
-    top: 48px;
-    left: 14px;
-    width: 534px;
-    height: 88px;
   }
   .background-rectangle-icon {
     position: absolute;
@@ -1298,6 +1265,13 @@ import 'primeicons/primeicons.css'
     height: 18px;
     object-fit: cover;
   }
+  .config-icon {
+    position: absolute;
+    top: 35.5%;
+    left: 9px;
+    width: 18px;
+    height: 0px;
+  }
   .side-left-menu {
     position: absolute;
     top: 103px;
@@ -1580,6 +1554,25 @@ import 'primeicons/primeicons.css'
 }
 .terminal-icon:hover .tooltiptext {
   visibility: visible;
+}
+.config-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.config-icon .tooltiptext {
+  visibility: hidden;
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 20px;
 }
 .terminal-icon .tooltiptext {
   visibility: hidden;

@@ -1,7 +1,7 @@
 <template>
-  <div class="webshell-xterm">
+  <div class="webshell-xterm" id ="terminal-container">
     <!-- <h2>Shell Management</h2> -->
-    <div ref="terminal"></div>
+    
   </div>
 </template>
 
@@ -9,18 +9,21 @@
 import { Terminal } from 'xterm';
 import axios from 'axios';
 import 'xterm/css/xterm.css';
+import { FitAddon } from 'xterm-addon-fit';
+import { uuid } from 'vue-uuid'; 
 
-import { WebLinksAddon } from '@xterm/addon-web-links';
+//import { WebLinksAddon } from '@xterm/addon-web-links';
 
+const fitAddon = new FitAddon();
 const terminal = new Terminal({
 termName: "webshell",
-cols: 120,
-rows: 24,
+cols:180,
+rows:44,
 screenKeys: true,
 convertEol: true
 });
 
-terminal.loadAddon(new WebLinksAddon());
+terminal.loadAddon(fitAddon);
 
 export default {
   name: 'WebShell',
@@ -42,8 +45,9 @@ export default {
       },30000)
     },
     initializeTerminal() {
-      terminal.open(this.$refs.terminal);
-
+      fitAddon.fit();
+      terminal.open(document.getElementById('terminal-container'));
+      
       // Handle user input
       terminal.onKey(e => {
         const printable = !e.altKey && !e.ctrlKey && !e.metaKey;
@@ -172,7 +176,9 @@ export default {
            "port": parseInt(data[4].split("=")[1], 10),
            "handle": data[0],
            "interface": "CLI",
-           "step": data[5].split("=")[1] === "True"
+           "step": data[5].split("=")[1] === "True",
+           "disconnect_ne_uuid": uuid.v4(),
+           "disconnect_status": "P"
           };
 
             //console.log("Request body:: ", rb);
@@ -199,7 +205,9 @@ export default {
             //  "port": 22,
              "handle": data[0],
              "interface": "CLI",
-             "step": "True"
+             "step": "True",
+             "connect_ne_uuid": uuid.v4(),
+             "connection_status": "P"
             };
 
             //console.log("Request body:: ", rb);
@@ -354,11 +362,11 @@ export default {
 }
 </script>
 
-<style scoped>
-div {
-  padding: 20px;
+<style >
+
+.terminal {
+  height:100vh;
 }
-.webshell-xterm{
-  margin-top: 2%;
-}
+
+
 </style>

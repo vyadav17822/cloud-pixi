@@ -4,7 +4,7 @@
             <button @click="uploadFile">Upload</button>
         </label> -->
   <div :class="showActionPaneEnabled ? 'main-div' : 'main-div-action'">
-    <div
+    <ScrollPanel
       v-if="loadSuiteData"
       :class="showLogsEnabled ? 'table-header' : 'table-header-full'"
     >
@@ -87,47 +87,7 @@
           </tr>
         </tbody>
       </table>
-    </div>
-    <div class="log-window" v-if="showLogsEnabled">
-      <div class="group-parent">
-        <div class="vikashinivikas-mi-notebook-ho-parent">
-          <div class="vikashinivikas-mi-notebook-ho">
-            Vikashini@vikas-mi-Notebook-Horizon-edition-15 :
-          </div>
-          <div class="desktopvinitodomy-project">
-            <span>~/desktop/vini/todo/my-project </span>
-            <span class="span">$</span>
-          </div>
-          <div class="na-version">
-            N/A : Version “N/A” is not yet installed.
-          </div>
-          <div class="you-need-to">
-            You need to run “nvm install N/A” to install it before using it.
-          </div>
-        </div>
-        <div class="group-wrapper">
-          <div class="frame-wrapper">
-            <div class="vikashinivikas-mi-notebook-ho-group">
-              <div class="vikashinivikas-mi-notebook-ho1">
-                Vikashini@vikas-mi-Notebook-Horizon-edition-15 :
-              </div>
-              <div class="desktopvinitodomy-project1">
-                <span>~/desktop/vini/todo/my-project </span>
-                <span class="span">$</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="log-header">
-        <div class="logs">Logs</div>
-        <div class="log-header-child" />
-        <img class="vector-icon1" alt="" src="/images/vector1.svg" />
-        <img class="vector-icon2" alt="" src="/images/vector2.svg" />
-        <img class="vector-icon3" alt="" src="/images/vector3.svg" />
-        <img class="vector-icon4" alt="" src="/images/vector4.svg" />
-      </div>
-    </div>
+    </ScrollPanel>
   </div>
 </template>
 
@@ -185,7 +145,7 @@ export default {
     },
 
     showLog() {
-      alert("Show Log:");
+      this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Show Logs', life: 3000 });
     },
   },
 };
@@ -219,7 +179,7 @@ export default {
   color: #b5b5c3;
   position: relative;
   background: #28466a;
-  overflow: auto;
+  /* overflow: auto; */
   border: 0px solid black;
 }
 .table-header-full {
@@ -228,7 +188,7 @@ export default {
   color: #b5b5c3;
   position: relative;
   background: #28466a;
-  overflow: auto;
+  /* overflow: auto; */
   border: 0px solid black;
 }
 .blank {
@@ -243,6 +203,7 @@ export default {
   padding: 8px;
   text-align: left;
   vertical-align: middle;
+  color:white;
 }
 
 .bg-null {
@@ -278,214 +239,10 @@ export default {
   box-sizing: border-box;
 }
 
-.you-need-to {
-  position: absolute;
-  top: 47px;
-  left: 0px;
-  font-weight: 500;
-}
-
-.vikashinivikas-mi-notebook-ho1 {
-  position: relative;
-  font-weight: 600;
-}
-.desktopvinitodomy-project1 {
-  position: relative;
-  font-weight: 500;
-  color: #80baff;
-}
-.vikashinivikas-mi-notebook-ho-group {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 3px;
-}
-.frame-wrapper {
-  width: 531px;
-  position: relative;
-  height: 18px;
-}
-.group-wrapper {
-  position: absolute;
-  top: 70px;
-  left: 0px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  color: #b8f171;
-}
-
-.background-rectangle-icon {
-  position: absolute;
-  height: 100%;
-  top: 0%;
-  bottom: 0%;
-  left: 0px;
-  max-height: 100%;
-  width: 100%;
-}
-.background-rectangle-icon1 {
-  position: absolute;
-  height: 100%;
-  top: 0%;
-  bottom: 0%;
-  left: 0px;
-  max-height: 100%;
-  width: 58px;
-}
-.logs {
-  position: absolute;
-  top: 6px;
-  left: 14px;
-  display: inline-block;
-  width: 90px;
-}
-.log-header-child {
-  position: absolute;
-  top: 30px;
-  left: 0px;
-  border-top: 1px solid #fff;
-  box-sizing: border-box;
-  width: 59px;
-  height: 1px;
-}
-.group-child {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  border-radius: 1px;
-  border: 1px solid #fff;
-  box-sizing: border-box;
-  width: 16.3px;
-  height: 18px;
-}
-.vector-icon {
-  position: absolute;
-  height: 41.11%;
-  width: 20.86%;
-  top: 25.63%;
-  right: 39.62%;
-  bottom: 33.26%;
-  left: 39.52%;
-  max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-  object-fit: contain;
-}
-.rectangle-parent {
-  position: absolute;
-  top: 6px;
-  left: 1085px;
-  width: 16.3px;
-  height: 18px;
-}
-.vector-icon1 {
-  position: absolute;
-  height: 12.67%;
-  width: 0.56%;
-  top: 43.11%;
-  right: 6.83%;
-  bottom: 44.22%;
-  left: 92.61%;
-  max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-  object-fit: contain;
-}
-.vector-icon2 {
-  position: absolute;
-  height: 41.33%;
-  width: 0.74%;
-  top: 30%;
-  right: 4.95%;
-  bottom: 28.67%;
-  left: 94.31%;
-  max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-}
-.vector-icon3 {
-  position: absolute;
-  height: 12.33%;
-  width: 0.56%;
-  top: 44.36%;
-  right: 3.17%;
-  bottom: 43.31%;
-  left: 96.27%;
-  max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-  object-fit: contain;
-}
-.vector-icon4 {
-  position: absolute;
-  height: 33.33%;
-  width: 0.77%;
-  top: 33.33%;
-  right: 1.25%;
-  bottom: 33.33%;
-  left: 97.98%;
-  max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-}
-.log-header {
-  position: absolute;
-  height: 22.06%;
-  top: 0%;
-  bottom: 77.94%;
-  left: 0px;
-  width: 100%;
-  color: #8b99ab;
-}
-
-.na-version {
-  position: absolute;
-  top: 23px;
-  left: 0px;
-  font-weight: 500;
-}
 .log-window {
   position: relative;
   height: 25%;
   background-color: #1a304d;
-}
-.span {
-  color: #e3e3e3;
-}
-.group-parent {
-  position: absolute;
-  top: 48px;
-  left: 14px;
-  width: 100%;
-  height: 88px;
-  overflow-y: auto;
-}
-.vikashinivikas-mi-notebook-ho-parent {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 534px;
-  height: 65px;
-}
-.vikashinivikas-mi-notebook-ho {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  font-weight: 600;
-  color: #b8f171;
-}
-.desktopvinitodomy-project {
-  position: absolute;
-  top: 0px;
-  left: 324px;
-  font-weight: 500;
-  color: #80baff;
 }
 .main-div {
   width: 76%;

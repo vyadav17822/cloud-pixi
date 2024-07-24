@@ -1,4 +1,5 @@
 import axios from "axios";
+import { uuid } from 'vue-uuid'; 
 export async function runSuiteCommand(command){
     function parseCommand(command, type) {       
         let paramsString = null;
@@ -77,7 +78,9 @@ export async function runSuiteCommand(command){
          "port": parseInt(data[4].split("=")[1], 10),
          "handle": data[0],
          "interface": "CLI",
-         "step": data[5].split("=")[1] === "True"
+         "step": data[5].split("=")[1] === "True",
+         "disconnect_ne_uuid": uuid.v4(),
+         "disconnect_status": "P"
         };
       
           let res = await axios.post('http://35.192.211.225:8001/api/disconnectNE/', {...rb})
@@ -92,7 +95,9 @@ export async function runSuiteCommand(command){
            "port": parseInt(data[4].split("=")[1], 10),
            "handle": data[0],
            "interface": "CLI",
-           "step": "True"
+           "step": "True",
+           "connect_ne_uuid": uuid.v4(),
+           "connection_status": "P"
           };
         
           console.log("Request body[Connect NE]:: ", rb);

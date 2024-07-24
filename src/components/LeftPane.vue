@@ -1,9 +1,9 @@
 <template>
 
   <div class="leftPane">
-    <Tree :value="treeData" selectionMode="single" @nodeSelect="onNodeSelect" style="margin-top: 5%; font-size: 16px;">
+    <Tree :value="treeData" selectionMode="single" @nodeSelect="onNodeSelect" style=" font-size: 16px; background-color: #1a304d;
+    border: none; padding:5px">
     </Tree>
-    <!-- <Tree :value="treeData" class="w-full md:w-[30rem]"></Tree> -->
 
   </div>
 
@@ -72,6 +72,13 @@ export default {
 }
 </script>
 <style>
+.p-tree .p-tree-container .p-treenode .p-treenode-content {
+    padding: 5px !important;
+}
+ 
+li{
+  line-height:1;
+}
 .leftPane {
     overflow-y: auto;
     height: 100%;
@@ -90,7 +97,7 @@ ul {
   list-style-type: none !important;
   margin-left: -28px;
   color: white;
-  line-height: 1.8;
+  line-height: 1;
 }
 
 button {
@@ -206,14 +213,6 @@ span {
   align-items: flex-start;
   justify-content: flex-start;
   color: #b8f171;
-}
-
-.group-parent {
-  position: absolute;
-  top: 48px;
-  left: 14px;
-  width: 534px;
-  height: 88px;
 }
 
 .background-rectangle-icon {
