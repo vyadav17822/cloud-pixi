@@ -130,8 +130,8 @@
         formData.append('filename1', file1.name);
         formData.append('filename2', file2.name);
         formData.append('folder', this.selectedfolder.code + '/cli');
-        formData.append('test_suite_uuid', '12345678-1234-5678-1234-567812345679');
-        formData.append('userid_uuid', 'user123');
+        formData.append('test_suite_uuid', 'ae25c605-f9e0-4ac3-bdb3-ebb43b');
+        formData.append('userid_uuid', 'e5ed4652-96ea-49ba-b3bb-f84fd7');
         const headers = { 'Content-Type': 'multipart/form-data' };
         console.log(formData);
         axios.post('http://35.192.211.225:8001/api/upload_with_structure/', formData, { headers }).then((res) => {
