@@ -92,11 +92,25 @@
         this.visible = false;
       },
       checkFile() {
-
         if (this.$refs.fileupload.files.length == 2) {
-          console.log(this.$refs.fileupload.files[0]);
-          this.fileSelected = true;
-          return true;
+          let name1 = (this.$refs.fileupload.files[0].name).split('.')[0];
+          let name2 = (this.$refs.fileupload.files[1].name).split('.')[0];
+          let fileType1 =  (this.$refs.fileupload.files[0].name).split('.')[1];
+          let fileType2 = (this.$refs.fileupload.files[1].name).split('.')[1];
+          if(name1 === name2){
+            if(fileType1 !== fileType2 && (fileType1 === "xlsx" || fileType1 === "yml") && (fileType2 === "xlsx" || fileType2 === "yml")){
+              console.log(this.$refs.fileupload.files[0]);
+              this.fileSelected = true;
+              return true;
+            } else {
+              this.fileSelected = false;
+              this.$toast.add({ severity: 'warn', summary: 'Information', detail: 'Selected files extension should be "xlsx" or "yml"', life: 5000 });
+            }
+          } else {
+            this.fileSelected = false;
+            this.$toast.add({ severity: 'warn', summary: 'Information', detail: 'Selected files name should be same', life: 5000 });
+          }
+
         } else {
           this.fileSelected = false;
           this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Please Select 2 Files', life: 5000 });
@@ -123,6 +137,9 @@
         axios.post('http://localhost:8000/api/upload_with_structure/', formData, { headers }).then((res) => {
           console.log(res.data); // binary representation of the file
           console.log(res.status); // HTTP status
+          this.$toast.add({ severity: 'success', summary: 'Information', detail: 'File uploaded successfully', life: 5000 });
+        }).catch(err => {
+          this.$toast.add({ severity: 'error', summary: 'Information', detail: err, life: 5000 });
         });
         this.visible = false;
       },
