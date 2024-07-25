@@ -134,7 +134,7 @@
         formData.append('userid_uuid', 'user123');
         const headers = { 'Content-Type': 'multipart/form-data' };
         console.log(formData);
-        axios.post('http://localhost:8000/api/upload_with_structure/', formData, { headers }).then((res) => {
+        axios.post('http://35.192.211.225:8001/api/upload_with_structure/', formData, { headers }).then((res) => {
           console.log(res.data); // binary representation of the file
           console.log(res.status); // HTTP status
           this.$toast.add({ severity: 'success', summary: 'Information', detail: 'File uploaded successfully', life: 5000 });
