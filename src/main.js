@@ -127,6 +127,7 @@ const app = createApp(App)
 
 app.config.globalProperties.$runSuiteCommand = runSuiteCommand;
 localStorage.setItem("isSuiteAborted", false);
+sessionStorage.setItem('pauseOnFailIndex', 0);
 
 app.use(router)
 app.use(PrimeVue)

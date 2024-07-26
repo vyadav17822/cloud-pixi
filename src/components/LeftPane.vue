@@ -63,7 +63,7 @@ export default {
           })
       } else {
         //console.log("Inside the folder structure");
-        alert("Not a file")
+        this.$toast.add({ severity: 'warn', summary: 'Information', detail: 'Not a file', life: 5000 });
       }
 
     },

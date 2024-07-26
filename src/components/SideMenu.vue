@@ -85,8 +85,8 @@ import 'primeicons/primeicons.css'
         this.$emit("runSuite",this.runSuite);
       },
       abortSuite() {
-        alert("Aborting....");
-      localStorage.setItem("isSuiteAborted", true);
+        this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });
+        localStorage.setItem("isSuiteAborted", true);
     },
       handleActionPane(){
       if(this.showActionPane===false)

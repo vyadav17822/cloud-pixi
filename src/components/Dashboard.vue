@@ -74,16 +74,21 @@ export default defineComponent({
 
       try {
         let startIndex = 0;
-        let isAborted = localStorage.getItem("isSuiteAborted");
         let isAbortOnFailSelected = localStorage.getItem('abortOnFail');
         let isPauseOnFailSelected = localStorage.getItem('pauseOnFail');
+        let isSingleStep = localStorage.getItem('singleStep');
         if(isPauseOnFailSelected === 'true'){
-          startIndex = localStorage.getItem('pauseOnFailIndex')
+          startIndex = parseInt(sessionStorage.getItem('pauseOnFailIndex'))
         }
-        for (let i = startIndex; i < this.loadSuiteData.length; i++) {
-          localStorage.setItem('pauseOnFailIndex', 0);
+        let loadSuiteLength = this.loadSuiteData.length;
+        if(isSingleStep === 'true'){
+          loadSuiteLength = 1;
+        }
+        for (let i = startIndex; i < loadSuiteLength; i++) {
+          sessionStorage.setItem('pauseOnFailIndex', 0);
+          isPauseOnFailSelected = localStorage.getItem('pauseOnFail');
           //console.log(this.loadSuiteData[i]);
-         
+          let isAborted = localStorage.getItem("isSuiteAborted");
             if (isAborted === 'true') {
               this.show();
               break;
@@ -106,7 +111,7 @@ export default defineComponent({
                 break;
               } 
               if( isPauseOnFailSelected  === 'true'){
-                localStorage.setItem('pauseOnFailIndex', i+1);
+                sessionStorage.setItem('pauseOnFailIndex', i+1);
                 break;
               }
             }
@@ -210,7 +215,7 @@ export default defineComponent({
         reader.readAsArrayBuffer(file);
         //console.log("Row data::: ", this.loadSuiteData);
       } else {
-        alert("No file found");
+        this.$toast.add({ severity: 'info', summary: 'Information', detail: 'No file found', life: 5000 });
       }
     },
   },
