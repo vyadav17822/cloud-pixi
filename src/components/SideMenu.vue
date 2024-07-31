@@ -1,7 +1,8 @@
 <template>
     <div class="side-left-menu">
       <!-- <img class="abort-icon" alt="" src="/images/abort@2x.png" /> -->
-      <div class="abort-icon" :disabled="this.isRunSuiteStarted "><span class="tooltiptext" >Abort Suite</span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;" @click="abortSuite"></i></div>
+      <div v-if="aborted" class="aborted-icon" ><span class="tooltiptext" >Abort Clear</span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;" @click="abortSuiteClear"></i></div>
+      <div v-else class="abort-icon" ><span class="tooltiptext" >Abort </span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;" @click="abortSuite"></i></div>
       <!-- <img class="pause-icon" alt="" src="/images/pause@2x.png" /> -->
       <div class="pause-icon" ><span class="tooltiptext">Pause Suite</span><i class="fa-solid fa-pause" style="color:white;font-size: 20px;"></i></div>
       <!-- <img class="restart-icon" alt="" src="/images/restart@2x.png" /> -->
@@ -63,55 +64,74 @@ import 'primeicons/primeicons.css'
         visible: false,
         pauseOnFail: false,
         abortOnFail: false,
-        singleStep: false
+        singleStep: false,
+        aborted: false
       };
     },
     methods: {
-      openWebShell(){
-        const loggerURL = this.$router.resolve({name: 'Webshell'}).href;
-        window.open(loggerURL, '_blank');
-      },
-      handleShowLogs(){
-        this.isRunSuiteStarted = true;
-        if (this.showLogs===false){
-          this.showLogs=true
-        }
-        else{
-          this.showLogs=false
-        }
-        this.$emit("showLogs",this.showLogs)
-      },
-      handleRunSuite(){
-        this.$emit("runSuite",this.runSuite);
-      },
-      abortSuite() {
-        this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });
-        localStorage.setItem("isSuiteAborted", true);
-    },
-      handleActionPane(){
-      if(this.showActionPane===false)
-        this.showActionPane=true;
-      else{
-        this.showActionPane=false;
+    abortSuite() {
+      this.show("info","Information", "Aborting Test Suite");
+      localStorage.setItem("isSuiteAborted", true);
+      if(localStorage.getItem("isSuiteAborted")=="true"){
+        this.aborted = true;
       }
-        this.$emit("showActionPanel",this.showActionPane);
-      },
-      openConfig(){
-        this.visible = true;
-        this.pauseOnFail = (localStorage.getItem("pauseOnFail") == 'true'? true : false);
-        this.abortOnFail = (localStorage.getItem("abortOnFail") == 'true' ? true : false);
-        this.singleStep = (localStorage.getItem("singleStep") == 'true' ? true : false);
-      },
-      saveConfigSettings(){
-        localStorage.setItem('pauseOnFail', this.pauseOnFail);
-        localStorage.setItem('abortOnFail', this.abortOnFail);
-        localStorage.setItem('singleStep', this.singleStep);
-        this.visible = false;
-        this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Config setting changed successfully', life: 3000 });
-      },
-      closeConfig(){
-        this.visible = false;
-      },
+    },
+    abortSuiteClear() {
+      this.show("success", "Success", "Abort Cleared");
+      localStorage.setItem("isSuiteAborted", false);
+      this.aborted = false;
+    },
+    show(seve,info,message) {
+      this.$toast.add({ severity: seve, summary: info, detail: message, life: 3000 });
+    },
+    openWebShell() {
+      const loggerURL = this.$router.resolve({ name: 'Webshell' }).href;
+      window.open(loggerURL, '_blank');
+    },
+    handleShowLogs() {
+      this.isRunSuiteStarted = true;
+      if (this.showLogs === false) {
+        this.showLogs = true
+      }
+      else {
+        this.showLogs = false
+      }
+      this.$emit("showLogs", this.showLogs)
+    },
+    handleRunSuite() {
+      this.$emit("runSuite", this.runSuite);
+    },
+    // abortSuite() {
+    //   this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });
+    //   localStorage.setItem("isSuiteAborted", true);
+    // },
+    handleActionPane() {
+      if (this.showActionPane === false)
+        this.showActionPane = true;
+      else {
+        this.showActionPane = false;
+      }
+      this.$emit("showActionPanel", this.showActionPane);
+    },
+    openConfig() {
+      this.visible = true;
+      this.pauseOnFail = (localStorage.getItem("pauseOnFail") == 'true' ? true : false);
+      this.abortOnFail = (localStorage.getItem("abortOnFail") == 'true' ? true : false);
+      this.singleStep = (localStorage.getItem("singleStep") == 'true' ? true : false);
+    },
+    saveConfigSettings() {
+      localStorage.setItem('pauseOnFail', this.pauseOnFail);
+      localStorage.setItem('abortOnFail', this.abortOnFail);
+      localStorage.setItem('singleStep', this.singleStep);
+      this.visible = false;
+      this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Config setting changed successfully', life: 3000 });
+    },
+    closeConfig() {
+      this.visible = false;
+    },
+    getAbortStatus() {
+      this.isAborted = localStorage.getItem('isSuiteAborted');
+    },
     },
   };
 </script>
@@ -121,6 +141,38 @@ import 'primeicons/primeicons.css'
     background-color: #cdc1c1 !important;
   }
 
+  .aborted-icon:hover .tooltiptext {
+    visibility: visible;
+  }
+
+  .aborted-icon .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 7px;
+    left: 34px;
+  }
+
+  .aborted-icon {
+    position: absolute;
+    top: 26.5%;
+    /* left: 10px; */
+    width: 100%;
+    height: 28px;
+    background-color: red;
+    display: grid;
+    align-items: center;
+    object-fit: cover;
+    padding-left: 11px;
+  }
   .span {
     color: #e3e3e3;
   }
@@ -1212,10 +1264,13 @@ import 'primeicons/primeicons.css'
   .abort-icon {
     position: absolute;
     top: 26.5%;
-    left: 12px;
-    width: 18px;
-    height: 18px;
+    /* left: 10px; */
+    width: 100%;
+    height: 28px;
+    display: grid;
+    align-items: center;
     object-fit: cover;
+    padding-bottom: 2.5px;
   }
   .pause-icon {
     position: absolute;

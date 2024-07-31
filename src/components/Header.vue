@@ -79,7 +79,8 @@
         selectedfolder:String,
         fileSelected: false,
         folder:[ { name: 'G30', code: 'g30' }, { name: 'G40', code: 'g40' },],
-        files: []
+        files: [],
+        sendReload:true,
       };
     },
     methods: {
@@ -138,6 +139,7 @@
           console.log(res.data); // binary representation of the file
           console.log(res.status); // HTTP status
           this.$toast.add({ severity: 'success', summary: 'Information', detail: 'File uploaded successfully', life: 5000 });
+          this.$emit("sendReload",this.sendReload);
         }).catch(err => {
           this.$toast.add({ severity: 'error', summary: 'Information', detail: err, life: 5000 });
         });

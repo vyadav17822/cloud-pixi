@@ -1,8 +1,8 @@
 <template>
-  <Header />
+  <Header @sendReload="sendReloadToLeftPanel" />
   <Toast />
   <SideMenu @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" />
-  <LeftPaneView @sendData="sendDatatoLoadSuite" />
+  <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" />
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
   :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" />
   <LogWindow :showLogsEnabled="showLogsEnabled"/>
@@ -24,7 +24,7 @@ import axios from "axios";
 export default defineComponent({
   name: "PixiDashboard",
   mounted() {
-    this.getLeftPane();
+    // this.getLeftPane();
   },
   updated() {
     //console.log("updated");
@@ -45,7 +45,9 @@ export default defineComponent({
       jsonData: [],
       showActionPaneEnabled: true,
       showLogsEnabled: true,
-      isRunSuiteClicked: false
+      isRunSuiteClicked: false,
+      sendReload:false,
+      componentKey: 0,
     };
   },
 
@@ -53,6 +55,11 @@ export default defineComponent({
     showActionPanel(showActionPaneEnabled) {
       this.showActionPaneEnabled = showActionPaneEnabled;
       //console.log(this.showActionPaneEnabled);
+    },
+    sendReloadToLeftPanel(e){
+      this.sendReload= e;
+      console.log(this.sendReload);  
+      this.componentKey += 1;  
     },
     showLogs(showLogsEnabled) {
       this.showLogsEnabled = showLogsEnabled;
