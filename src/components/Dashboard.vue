@@ -1,7 +1,7 @@
 <template>
   <Header @sendReload="sendReloadToLeftPanel" />
   <Toast />
-  <SideMenu @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" />
+  <SideMenu ref="sidemenu" @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" />
   <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" />
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
   :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" />
@@ -114,7 +114,10 @@ export default defineComponent({
               this.loadSuiteData[i].status = "2";
             } else {
               this.loadSuiteData[i].status = "3";
-              if(isAbortOnFailSelected === 'true'){
+              if(isAbortOnFailSelected == 'true'){
+                localStorage.setItem("isSuiteAborted", 'true');
+                this.$refs.sidemenu.toggleAbort();
+                this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborted due to failure', life: 5000 });
                 break;
               } 
               if( isPauseOnFailSelected  === 'true'){
@@ -125,7 +128,10 @@ export default defineComponent({
 
           } catch (error) {
             this.loadSuiteData[i].status = "3";
-            if(isAbortOnFailSelected === 'true'){
+            if(isAbortOnFailSelected == 'true'){
+              localStorage.setItem("isSuiteAborted", 'true');
+              this.$refs.sidemenu.toggleAbort();
+              this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborted due to failure', life: 5000 });
               break;
             }
           }
@@ -133,7 +139,7 @@ export default defineComponent({
       } catch (error) {
         //console.log("Error: ", error);
       }
-      localStorage.setItem("isSuiteAborted",false);
+      // localStorage.setItem("isSuiteAborted",false);
       this.isRunSuiteClicked = false;
     },
     show() {
