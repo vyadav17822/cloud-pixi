@@ -94,10 +94,17 @@ export default defineComponent({
         for (let i = startIndex; i < loadSuiteLength; i++) {
           sessionStorage.setItem('pauseOnFailIndex', 0);
           isPauseOnFailSelected = localStorage.getItem('pauseOnFail');
+          let isSuitePaused = sessionStorage.getItem('isSuitePaused')
           //console.log(this.loadSuiteData[i]);
           let isAborted = localStorage.getItem("isSuiteAborted");
             if (isAborted === 'true') {
               this.show();
+              break;
+            }
+
+            if(isSuitePaused === 'true'){
+              sessionStorage.setItem('pauseOnFailIndex', i+1);
+              this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Paused Successfully', life: 5000 });
               break;
             }
 
@@ -122,6 +129,7 @@ export default defineComponent({
               } 
               if( isPauseOnFailSelected  === 'true'){
                 sessionStorage.setItem('pauseOnFailIndex', i+1);
+                this.$refs.sidemenu.togglePause();
                 break;
               }
             }

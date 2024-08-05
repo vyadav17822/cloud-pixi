@@ -1,48 +1,48 @@
 <template>
-    <div class="side-left-menu">
-      <!-- <img class="abort-icon" alt="" src="/images/abort@2x.png" /> -->
-      <div :class="isAborted == 'true' ? 'aborted-icon' : 'abort-icon'" @click="toggleAbort"><span class="tooltiptext">{{tooltipText }}</span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;"></i></div>
-      <!-- <img class="pause-icon" alt="" src="/images/pause@2x.png" /> -->
-      <div class="pause-icon" ><span class="tooltiptext">Pause Suite</span><i class="fa-solid fa-pause" style="color:white;font-size: 20px;"></i></div>
-      <!-- <img class="restart-icon" alt="" src="/images/restart@2x.png" /> -->
-      <div class="restart-icon" ><span class="tooltiptext">Restart Suite</span><i class="fa fa-refresh" aria-hidden="true" style="color:white;font-size: 20px;"></i></div>
-      <!-- <img class="run-suite-icon" alt="" src="/images/run-suite@2x.png" /> -->
-      <div class="run-suite-icon"><span class="tooltiptext">Run Suite</span><i class="fas fa-running" @click ="handleRunSuite" style="color:white;font-size: 20px;"></i></div>
-      <div class="logs1-icon"><span class="tooltiptext">Logs</span><img class="logs-icon" alt="" src="/images/logs@2x.png" @click="handleShowLogs"/></div>
-      <div class="explore1-icon"><span class="tooltiptext">Explore</span><img class="explore-icon" alt="" src="/images/explore@2x.png"  /></div>
-      <div class="terminal-icon" @click="openWebShell" target="_blank" style="background-color: #001733; color: white;" ><span class="tooltiptext">Open WebShell</span><i class="fa-solid fa-terminal" style="font-size: 20px;"></i></div>
-      <div class="config-icon" @click="openConfig()" style="background-color: #001733; color: white;"><span class="tooltiptext">Config</span><i class="fa-solid fa-gears" style="font-size: 20px;"></i></div>
+  <div class="side-left-menu">
+    <!-- <img class="abort-icon" alt="" src="/images/abort@2x.png" /> -->
+    <div :class="isAborted == 'true' ? 'aborted-icon' : 'abort-icon'" @click="toggleAbort"><span class="tooltiptext">{{tooltipText }}</span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;"></i></div>
+    <!-- <img class="pause-icon" alt="" src="/images/pause@2x.png" /> -->
+    <div :class="isPaused == 'true' ? 'paused-icon' : 'pause-icon'" @click="togglePause"><span class="tooltiptext">{{ tttPause }}</span><i class="fa-solid fa-pause" style="color:white;font-size: 20px;"></i></div>
+    <!-- <img class="restart-icon" alt="" src="/images/restart@2x.png" /> -->
+    <div class="restart-icon" ><span class="tooltiptext">Restart Suite</span><i class="fa fa-refresh" aria-hidden="true" style="color:white;font-size: 20px;"></i></div>
+    <!-- <img class="run-suite-icon" alt="" src="/images/run-suite@2x.png" /> -->
+    <div class="run-suite-icon"><span class="tooltiptext">Run Suite</span><i class="fas fa-running" @click ="handleRunSuite" style="color:white;font-size: 20px;"></i></div>
+    <div class="logs1-icon"><span class="tooltiptext">Logs</span><img class="logs-icon" alt="" src="/images/logs@2x.png" @click="handleShowLogs"/></div>
+    <div class="explore1-icon"><span class="tooltiptext">Explore</span><img class="explore-icon" alt="" src="/images/explore@2x.png"  /></div>
+    <div class="terminal-icon" @click="openWebShell" target="_blank" style="background-color: #001733; color: white;" ><span class="tooltiptext">Open WebShell</span><i class="fa-solid fa-terminal" style="font-size: 20px;"></i></div>
+    <div class="config-icon" @click="openConfig()" style="background-color: #001733; color: white;"><span class="tooltiptext">Config</span><i class="fa-solid fa-gears" style="font-size: 20px;"></i></div>
+  </div>
+  <div class="sub-header">
+    <div class="sub-header-child" >
+      <span :class="showActionPane ? 'right-icon' : 'right-icon-enabled'" @click="handleActionPane"><i class="pi pi-angle-double-right" style="color:white" ></i></span>
     </div>
-    <div class="sub-header">
-      <div class="sub-header-child" >
-        <span :class="showActionPane ? 'right-icon' : 'right-icon-enabled'" @click="handleActionPane"><i class="pi pi-angle-double-right" style="color:white" ></i></span>
-      </div>
 
+  </div>
+  <div class="card flex justify-center">
+  <Dialog v-model:visible="visible" modal header="Config Settings" :style="{ width: '32rem', height: '15rem' }">
+    <div class="form-check form-switch">
+      <input class="form-check-input form-config-toggle" ref="pauseonfail" type="checkbox" role="switch" v-model="pauseOnFail" :checked="pauseOnFail">
+      <label class="form-check-label" for="flexSwitchCheckDefault">Pause on Fail</label>
     </div>
-    <div class="card flex justify-center">
-    <Dialog v-model:visible="visible" modal header="Config Settings" :style="{ width: '32rem', height: '15rem' }">
-      <div class="form-check form-switch">
-        <input class="form-check-input form-config-toggle" ref="pauseonfail" type="checkbox" role="switch" v-model="pauseOnFail" :checked="pauseOnFail">
-        <label class="form-check-label" for="flexSwitchCheckDefault">Pause on Fail</label>
-      </div>
-      <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Abort on Fail</span> -->
-      <div class="form-check form-switch">
-        <input class="form-check-input form-config-toggle" ref="abortonfail" type="checkbox" role="switch" v-model="abortOnFail" :checked="abortOnFail">
-        <label class="form-check-label" for="flexSwitchAbortOnFail">Abort on Fail</label>
-      </div>
-      <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Single step</span> -->
-      <div class="form-check form-switch">
-        <input class="form-check-input form-config-toggle" ref="singleStep" type="checkbox" role="switch" v-model="singleStep" :checked="singleStep">
-        <label class="form-check-label" for="flexSwitchSingleStep">Single step</label>
-      </div>
-      <div class="button-div" style="margin-top: 9px;">
-        <button @click="closeConfig" type="button" class="btn btn-secondary">
-          Cancel
-        </button>
+    <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Abort on Fail</span> -->
+    <div class="form-check form-switch">
+      <input class="form-check-input form-config-toggle" ref="abortonfail" type="checkbox" role="switch" v-model="abortOnFail" :checked="abortOnFail">
+      <label class="form-check-label" for="flexSwitchAbortOnFail">Abort on Fail</label>
+    </div>
+    <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Single step</span> -->
+    <div class="form-check form-switch">
+      <input class="form-check-input form-config-toggle" ref="singleStep" type="checkbox" role="switch" v-model="singleStep" :checked="singleStep">
+      <label class="form-check-label" for="flexSwitchSingleStep">Single step</label>
+    </div>
+    <div class="button-div" style="margin-top: 9px;">
+      <button @click="closeConfig" type="button" class="btn btn-secondary">
+        Cancel
+      </button>
 
-        <button type="button" class="btn btn-primary" @click="saveConfigSettings()" style="margin-left: 10px;">
-          Save
-        </button>
+      <button type="button" class="btn btn-primary" @click="saveConfigSettings()" style="margin-left: 10px;">
+        Save
+      </button>
 
 
     </div>
@@ -66,11 +66,16 @@ data() {
     singleStep: false,
     isAborted: localStorage.getItem('isSuiteAborted') || "false",
     tooltipText: localStorage.getItem('isSuiteAborted') == "true" ? 'Abort Clear' : 'Abort Suite',
+    isPaused: sessionStorage.getItem('isSuitePaused') || "false",
+    tttPause: sessionStorage.getItem('isSuitePaused') == "true" ? 'Pause Clear' : 'Pause',
   };
 },
 mounted() {
   if (localStorage.isSuiteAborted) {
     this.isAborted = localStorage.isSuiteAborted;
+  }
+  if(sessionStorage.isSuitePaused){
+    this.isPaused = sessionStorage.isSuitePaused;
   }
 },
 watch: {
@@ -79,6 +84,11 @@ watch: {
     this.isAborted = localStorage.isSuiteAborted;
     //localStorage.setItem('isSuiteAborted', JSON.stringify(newVal));
     this.tooltipText = this.isAborted == 'true' ? 'Abort Clear' : 'Abort Suite';
+  },
+  isPaused(val){
+    sessionStorage.isSuitePaused = val;
+    this.isPaused = sessionStorage.isSuitePaused;
+    this.tttPause = this.isPaused == 'true' ? 'Pause Clear' : 'Pause';
   }
 },
 methods: {
@@ -90,6 +100,17 @@ methods: {
       this.isAborted = "true"
       this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });     
     }
+  },
+  togglePause(){
+    console.log("Inside the toggle pause::: ", this.isPaused);
+    if(this.isPaused == 'true'){
+      sessionStorage.setItem('isSuitePaused', 'false');
+      this.isPaused = false;
+    } else {
+      sessionStorage.setItem('isSuitePaused', 'true');
+      this.isPaused = true;
+    }
+    this.tttPause = this.isPaused == 'true' ? 'Pause Clear' : 'Pause';
   },
   openWebShell() {
     const loggerURL = this.$router.resolve({ name: 'Webshell' }).href;
@@ -146,6 +167,38 @@ methods: {
 <style scoped>
 :deep(.form-config-toggle) {
 background-color: #cdc1c1 !important;
+}
+
+.paused-icon:hover .tooltiptext {
+visibility: visible;
+}
+
+.paused-icon .tooltiptext {
+visibility: hidden;
+width: 140px;
+background-color: black;
+color: #fff;
+text-align: center;
+border-radius: 6px;
+padding: 5px 0;
+
+/* Position the tooltip */
+position: absolute;
+z-index: 1;
+top: 5px;
+left: 34px;
+}
+
+.paused-icon {
+position: absolute;
+top: 22%;
+width: 100%;
+height: 25px;
+background-color: red;
+display: grid;
+align-items: center;
+object-fit: cover;
+padding-left: 11px;
 }
 
 .aborted-icon:hover .tooltiptext {
