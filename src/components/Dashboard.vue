@@ -5,6 +5,7 @@
   <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" />
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
   :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" />
+  <RightPane :showActionPaneEnabled="showActionPaneEnabled"/>
   <LogWindow :showLogsEnabled="showLogsEnabled"/>
 </template>
 <script>
@@ -13,6 +14,7 @@ import LeftPaneView from "./LeftPaneView.vue";
 import SideMenu from "./SideMenu.vue";
 import LoadSuite from "./LoadSuite.vue";
 import LogWindow from "./LogWindow.vue";
+import RightPane from "./RightPane.vue";
 import { defineComponent } from "vue";
 //import FileUploadModal from "./FileUploadModal.vue";
 // import LoadSuite from "./LoadSuite.vue";
@@ -37,6 +39,7 @@ export default defineComponent({
     LeftPaneView,
     LoadSuite,
     LogWindow,
+    RightPane
     //FileUploadModal,
   },
   data() {
