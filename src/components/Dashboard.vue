@@ -4,8 +4,8 @@
   <SideMenu ref="sidemenu" @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" />
   <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" />
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
-  :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" />
-  <RightPane :showActionPaneEnabled="showActionPaneEnabled"/>
+  :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" :testSuiteUUID="testSuiteUUID" />
+  <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID"/>
   <LogWindow :showLogsEnabled="showLogsEnabled"/>
 </template>
 <script>
@@ -51,6 +51,7 @@ export default defineComponent({
       isRunSuiteClicked: false,
       sendReload:false,
       componentKey: 0,
+      testSuiteUUID: '',
     };
   },
 
@@ -156,8 +157,9 @@ export default defineComponent({
     show() {
       this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Aborted Successfully', life: 3000 });
     },
-    sendDatatoLoadSuite(data) {
+    sendDatatoLoadSuite(data,testSuiteUUID) {
       this.loadSuiteData = data;
+      this.testSuiteUUID=testSuiteUUID;
       //console.log("this.data " + this.loadSuiteData);
     },
     showLoadSuite() {

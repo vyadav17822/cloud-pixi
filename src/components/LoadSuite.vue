@@ -4,10 +4,7 @@
             <button @click="uploadFile">Upload</button>
         </label> -->
   <div :class="showActionPaneEnabled ? 'main-div' : 'main-div-action'">
-    <ScrollPanel
-      v-if="loadSuiteData"
-      :class="showLogsEnabled ? 'table-header' : 'table-header-full'"
-    >
+    <ScrollPanel v-if="loadSuiteData" :class="showLogsEnabled ? 'table-header' : 'table-header-full'">
       <table class="table">
         <thead>
           <tr class="table-head" style="font-size: 16px">
@@ -29,59 +26,28 @@
             </td>
             <td></td>
             <td v-if="suite.status === '0'"></td>
-            <td
-              v-else-if="suite.status === '1'"
-              style="align-items: center !important"
-            >
-              <button
-                type="button"
-                class="btn btn-primary"
-                style="background-color: blue; cursor: default"
-              >
+            <td v-else-if="suite.status === '1'" style="align-items: center !important">
+              <button type="button" class="btn btn-primary" style="background-color: blue; cursor: default">
                 Running
               </button>
             </td>
             <td v-else-if="suite.status === '2'">
-              <button
-                type="button"
-                class="btn btn-success"
-                style="background-color: green; cursor: default"
-              >
+              <button type="button" class="btn btn-success" style="background-color: green; cursor: default">
                 Success
               </button>
             </td>
             <td v-else-if="suite.status === '3'">
-              <button
-                type="button"
-                class="btn btn-danger"
-                style="background-color: red; cursor: default"
-              >
+              <button type="button" class="btn btn-danger" style="background-color: red; cursor: default">
                 Failure
               </button>
             </td>
             <td>
-              <button
-                class="btn btn-primary"
-                @click="runCommand(suite)"
-                style="background-color: #f3f6f9"
-                :disabled="isRunSuiteClicked"
-              >
-                <i
-                  class="fa fa-play"
-                  aria-hidden="true"
-                  style="color: #3699ff; background-color: #f3f6f9"
-                ></i>
+              <button class="btn btn-primary" @click="runCommand(suite)" style="background-color: #f3f6f9"
+                :disabled="isRunSuiteClicked">
+                <i class="fa fa-play" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9"></i>
               </button>
-              <button
-                class="btn btn-primary"
-                @click="showLog"
-                style="background-color: #f3f6f9"
-              >
-                <i
-                  class="fas fa-ellipsis-h"
-                  aria-hidden="true"
-                  style="color: #3699ff; background-color: #f3f6f9"
-                ></i>
+              <button class="btn btn-primary" @click="showLog" style="background-color: #f3f6f9">
+                <i class="fas fa-ellipsis-h" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9"></i>
               </button>
             </td>
           </tr>
@@ -107,9 +73,9 @@ export default {
     // eslint-disable-next-line vue/require-prop-type-constructor
     showLogsEnabled: true,
     isRunSuiteClicked: {
-    type: Boolean,
-  default: false
-}
+      type: Boolean,
+      default: false
+    },
   },
   data() {
     return {
@@ -125,6 +91,7 @@ export default {
     //console.log("Load suite data:: ", this.loadSuiteData);
     //console.log("showActionPane" + this.showActionPaneEnabled);
     //console.log("showActionPane" + this.showLogsEnabled);
+    
   },
   methods: {
     async runCommand(suite) {
@@ -182,6 +149,7 @@ export default {
   /* overflow: auto; */
   border: 0px solid black;
 }
+
 .table-header-full {
   height: 100%;
   font-size: 12px;
@@ -191,19 +159,27 @@ export default {
   /* overflow: auto; */
   border: 0px solid black;
 }
+
 .blank {
   height: 35%;
 }
+
 .table {
-  width: 100%;
+  width: 97%;
   padding: 18px 18px;
+  margin-left: 1%;
+  margin-right: 2%
+}
+.table th,
+.table tr{
+  border-bottom: 1px solid white;
 }
 .table th,
 .table td {
   padding: 8px;
   text-align: left;
   vertical-align: middle;
-  color:white;
+  color: white;
 }
 
 .bg-null {
@@ -213,6 +189,7 @@ export default {
   display: block;
   cursor: default;
 }
+
 .bg-success {
   background-color: #008000 !important;
   width: 100%;
@@ -220,6 +197,7 @@ export default {
   display: block;
   cursor: default !important;
 }
+
 .bg-failed {
   background-color: #ff0000;
   width: 100%;
@@ -230,6 +208,7 @@ export default {
 .loadsuite-title {
   text-align: left !important;
 }
+
 .table-head {
   position: sticky;
   top: 0px !important;
@@ -244,6 +223,7 @@ export default {
   height: 25%;
   background-color: #1a304d;
 }
+
 .main-div {
   width: 76%;
   top: 103px;
@@ -254,6 +234,10 @@ export default {
   background: #28466a;
   border: 0px solid black;
   margin-left: 24%;
+}
+.table thead th{
+  border-top: 0px;
+  border-bottom:1px solid white;
 }
 
 .main-div-action {

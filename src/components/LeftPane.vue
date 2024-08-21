@@ -34,7 +34,7 @@ export default {
     }
   },
   methods: {
-    customEvent(data) {
+    customEvent(data,testSuiteUUID) {
       //console.log(data);
       this.filteredData = [];
       for (let i = 0; i < data.length; i++) {
@@ -44,18 +44,18 @@ export default {
         }
       }
       //console.log(this.filteredData);
-      this.$emit('emitData', this.filteredData);
+      this.$emit('emitData', this.filteredData,testSuiteUUID);
     },
     onNodeSelect(node) {
       //console.log("Checking Clicked node::: ", node.parent_path, node.label);
       if (node.label.split(".")[1] === 'xlsx') {
-        let url = 'http://35.192.211.225:8001/api/bucket_files/?label=' + '' + node.parent_path + '' + node.label;
+        let url = 'http://35.192.211.225:8001/api/bucket_files/?label=' + '' + node.parent_path + '' + node.test_suite_uuid_name+'.xlsx';
         axios.get(url)
           .then(res => {
             //console.log("Result:::: [->]", JSON.parse(res.data));
             let data = JSON.parse(res.data);
             //console.log(data);
-            this.customEvent(data);
+            this.customEvent(data,node.label.substring(0,node.label.length-5));
 
           })
           .catch(error => {
