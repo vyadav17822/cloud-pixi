@@ -74,7 +74,7 @@ export default {
 </style>
 <style scoped>
 :deep(.terminal){
-    height: 20vh;
+    height: 34.8vh;
     background-color: #1b1b28;
   }
 .log-terminal{
@@ -93,35 +93,6 @@ export default {
   margin-top: -15px;
   margin-left: -15Px;
   color: #fff;
-}
-
-.you-need-to {
-  position: absolute;
-  top: 47px;
-  left: 0px;
-  font-weight: 500;
-}
-
-.vikashinivikas-mi-notebook-ho1 {
-  position: relative;
-  font-weight: 600;
-}
-
-.desktopvinitodomy-project1 {
-  position: relative;
-  font-weight: 500;
-  color: #80baff;
-}
-
-.vikashinivikas-mi-notebook-ho-group {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 3px;
 }
 
 .frame-wrapper {
@@ -216,7 +187,7 @@ export default {
   position: absolute;
   height: 12.67%;
   width: 0.56%;
-  top: 43.11%;
+  top: 25.11%;
   right: 6.83%;
   bottom: 44.22%;
   left: 92.61%;
@@ -230,7 +201,7 @@ export default {
   position: absolute;
   height: 41.33%;
   width: 0.74%;
-  top: 30%;
+  top: 11%;
   right: 4.95%;
   bottom: 28.67%;
   left: 94.31%;
@@ -243,7 +214,7 @@ export default {
   position: absolute;
   height: 12.33%;
   width: 0.56%;
-  top: 44.36%;
+  top: 26.36%;
   right: 3.17%;
   bottom: 43.31%;
   left: 96.27%;
@@ -257,7 +228,7 @@ export default {
   position: absolute;
   height: 33.33%;
   width: 0.77%;
-  top: 33.33%;
+  top: 15.33%;
   right: 1.25%;
   bottom: 33.33%;
   left: 97.98%;
@@ -285,8 +256,8 @@ export default {
 
 .log-window {
   position: absolute;
-  top: 88.2%;
-  height: 24.6%;
+  top: 73.2%;
+  height: 40%;
   width: 76%;
   left: 24%;
   background-color: #1a304d;

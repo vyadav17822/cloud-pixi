@@ -141,7 +141,7 @@ export default {
 }
 
 .table-header {
-  height: 75%;
+  height: 60%;
   font-size: 12px;
   color: #b5b5c3;
   position: relative;
@@ -241,7 +241,7 @@ export default {
 }
 
 .main-div-action {
-  width: 60%;
+  width: 57%;
   top: 103px;
   height: 100%;
   font-size: 12px;

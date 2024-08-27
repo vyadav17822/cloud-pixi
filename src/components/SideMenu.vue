@@ -462,7 +462,7 @@ export default {
 .right-icon-enabled {
   position: absolute;
   margin-top: 0.5%;
-  margin-left: 82%;
+  margin-left: 80%;
 }
 
 .div {
@@ -1543,7 +1543,7 @@ export default {
   left: 0px;
   background-color: #001733;
   position: absolute;
-  width: calc(100% + 1px);
+  width: 100%;
   height: 38px;
 }
 
@@ -1558,7 +1558,7 @@ export default {
 
 .sub-header {
   position: absolute;
-  width: calc(100% + 1px);
+  width: 100%;
   top: 65px;
   left: 0px;
   height: 38px;

@@ -5,7 +5,7 @@
   <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" />
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
   :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" :testSuiteUUID="testSuiteUUID" />
-  <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID"/>
+  <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID" />
   <LogWindow :showLogsEnabled="showLogsEnabled"/>
 </template>
 <script>

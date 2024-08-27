@@ -26,7 +26,9 @@
     </div>
     <img class="logo-icon" alt="" src="/images/logo@2x.png" />
   </div>
+ 
   <div class="card flex justify-center">
+    <ConfirmDialog></ConfirmDialog>
     <Dialog v-model:visible="visible" modal header="Upload Test Suite" :style="{ width: '32rem' }">
       <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Select Files to be uploaded</span>
 
@@ -50,13 +52,13 @@
       </div>
 
       <div class="button-div">
-        <button @click="closeModal" type="button" class="btn btn-secondary">
+        <Button @click="closeModal" type="button" class="btn btn-secondary">
           Cancel
-        </button>
+        </Button>
 
-        <button type="button" class="btn btn-primary" :disabled="!fileSelected" @click="customBase64Uploader()">
+        <Button type="button" class="btn btn-primary" :disabled="!fileSelected" @click="confirmDialog()">
           Upload
-        </button>
+        </Button>
 
 
       </div>
@@ -118,6 +120,40 @@
         }
 
       },
+      confirmDialog() {
+        const file1 = this.$refs.fileupload.files[0];
+        //const headers = { 'Content-Type': 'application/json' };
+        axios.get('http://35.192.211.225:8001/api/file_validation_db/?Content-Type=application/json&test_suite_file_name='+file1.name+'&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7').then((res) => {
+          console.log(res.data); // binary representation of the file
+          console.log(res.status); // HTTP status
+          if(res.data==true){
+          this.$confirm.require({
+                message: 'File Already exists! Are you sure you want to proceed?',
+                header: 'Confirmation',
+                icon: 'pi pi-exclamation-triangle',
+                rejectClass: 'p-button-secondary p-button-outlined',
+                acceptClass: 'p-button-primary p-button-outlined',
+                rejectLabel: 'No',
+                acceptLabel: 'Yes',
+                accept: () => {
+                    //this.$toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+                    this.customBase64Uploader();
+                },
+                reject: () => {
+                    this.$toast.add({ severity: 'error', summary: 'Cancelled', detail: 'File Upload Cancelled', life: 5000 });
+                    this.closeModal();
+                }
+            });
+          }else{
+            this.customBase64Uploader();
+          }
+
+          //this.$toast.add({ severity: 'success', summary: 'Information', detail: 'File uploaded successfully', life: 5000 });
+          this.$emit("sendReload",this.sendReload);
+        }).catch(err => {
+          this.$toast.add({ severity: 'error', summary: 'Information', detail: err, life: 5000 });
+        });
+      },
       async customBase64Uploader() {
         console.log(this.selectedfolder);
         const file1 = this.$refs.fileupload.files[0];
@@ -138,7 +174,7 @@
         axios.post('http://35.192.211.225:8001/api/upload_with_structure/', formData, { headers }).then((res) => {
           console.log(res.data); // binary representation of the file
           console.log(res.status); // HTTP status
-          this.$toast.add({ severity: 'success', summary: 'Information', detail: 'File uploaded successfully', life: 5000 });
+          this.$toast.add({ severity: 'success', summary: 'Success', detail: 'File uploaded successfully', life: 5000 });
           this.$emit("sendReload",this.sendReload);
         }).catch(err => {
           this.$toast.add({ severity: 'error', summary: 'Information', detail: err, life: 5000 });
@@ -199,6 +235,9 @@
     right: 185.79px;
     width: 19px;
     height: 19px;
+  }
+  :deep(.p-confirm-dialog-accept span){
+    color: #ccc;
   }
 
   .notifications-icon {

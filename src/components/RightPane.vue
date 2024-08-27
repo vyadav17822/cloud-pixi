@@ -71,7 +71,7 @@
                         <tbody>
                             <tr>
                                 <td style="text-align: center">{{ historicalData.executed_at.split('T')[0] || "NA" }}</td>
-                                <td style="text-align: left; word-wrap:break-word;" class="file-dwnld" @click="downloadWithAxios(historicalData)"><i
+                                <td style="text-align: left; word-wrap:break-word;" class="file-dwnld" @click="downloadWithAxios()"><i
                                         class="fa-solid fa-arrow-down"></i>
                                     {{ historicalData.logs_path.substring(historicalData.logs_path.lastIndexOf('/') + 1) }} </td>
                             </tr>
@@ -182,7 +182,7 @@ export default {
                 })
         },
      async getHistoricalData() {
-            let url = 'http://35.192.211.225:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=12345678-1234-5678-1234-567812345684';
+            let url = 'http://35.192.211.225:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b';
            await axios.get(url)
                 .then(res => {
                     console.log('Res:: ', res.data, typeof res);
@@ -202,18 +202,23 @@ export default {
             document.body.appendChild(link)
             link.click()
         },
-        downloadWithAxios(val) {
-            let url = val.logs_path;
+        downloadWithAxios() {
+            let url = "http://35.192.211.225:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b";
             axios({
                 method: 'get',
                 url,
-                responseType: 'arraybuffer',
                 headers: {
                     "Access-Control-Allow-Origin": "*"
                 }
             })
-                .then((response) => {
-                    this.fileDownload(response, val.logs_path.substring(val.logs_path.lastIndexOf('/') + 1))
+                .then((response)=>{
+                    let url = response.logs_path;
+                    axios.get({
+                        url,
+                        headers: {
+                         "Access-Control-Allow-Origin": "*"
+                }
+                    }).then().catch(()=> console.log('error occured'))
                 })
                 .catch(() => console.log('error occured'))
         }
@@ -231,7 +236,7 @@ export default {
 }
 
 .rightpaneview {
-    width: 16%;
+    width: 19%;
     top: 103px;
     height: 100%;
     font-size: 12px;
@@ -239,7 +244,7 @@ export default {
     position: absolute;
     background: #1a304d;
     border: 0px solid black;
-    margin-left: 84%;
+    margin-left: 81%;
 }
 
 .table td,
