@@ -55,7 +55,7 @@ export default {
             //console.log("Result:::: [->]", JSON.parse(res.data));
             let data = JSON.parse(res.data);
             //console.log(data);
-            this.customEvent(data,node.label.substring(0,node.label.length-5));
+            this.customEvent(data,node.test_suite_uuid_name.substring(0,23));
 
           })
           .catch(error => {

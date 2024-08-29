@@ -2,10 +2,10 @@
   <Header @sendReload="sendReloadToLeftPanel" />
   <Toast />
   <SideMenu ref="sidemenu" @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" />
-  <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" />
+  <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" :leftPaneTestSuiteUUID="leftPaneTestSuiteUUID"/>
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
   :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" :testSuiteUUID="testSuiteUUID" />
-  <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID" />
+  <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID" :showLogsEnabled="showLogsEnabled"/>
   <LogWindow :showLogsEnabled="showLogsEnabled"/>
 </template>
 <script>
@@ -52,6 +52,8 @@ export default defineComponent({
       sendReload:false,
       componentKey: 0,
       testSuiteUUID: '',
+      leftPaneTestSuiteUUID:'',
+
     };
   },
 
@@ -60,9 +62,10 @@ export default defineComponent({
       this.showActionPaneEnabled = showActionPaneEnabled;
       //console.log(this.showActionPaneEnabled);
     },
-    sendReloadToLeftPanel(e){
+    sendReloadToLeftPanel(e,testSuiteuuid){
       this.sendReload= e;
-      console.log(this.sendReload);  
+      this.leftPaneTestSuiteUUID= testSuiteuuid;
+      //console.log(this.testSuiteUUID);  
       this.componentKey += 1;  
     },
     showLogs(showLogsEnabled) {
@@ -85,6 +88,11 @@ export default defineComponent({
 
       try {
         let startIndex = 0;
+        let isSuitePausedRunSuite = sessionStorage.getItem('isSuitePaused');
+        if(isSuitePausedRunSuite ==='true'){
+          this.$toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please Clear Pause First', life: 5000 });
+          return;
+        }
         let isAbortOnFailSelected = localStorage.getItem('abortOnFail');
         let isPauseOnFailSelected = localStorage.getItem('pauseOnFail');
         let isSingleStep = localStorage.getItem('singleStep');
@@ -160,6 +168,7 @@ export default defineComponent({
     sendDatatoLoadSuite(data,testSuiteUUID) {
       this.loadSuiteData = data;
       this.testSuiteUUID=testSuiteUUID;
+      //console.log(this.testSuiteUUID);
       //console.log("this.data " + this.loadSuiteData);
     },
     showLoadSuite() {

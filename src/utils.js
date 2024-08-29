@@ -14,7 +14,7 @@ export async function runSuiteCommand(command){
         else if(type === 'comparePairs')
           paramsString = command.slice(13, -1);
 
-        console.log("Params String: ", paramsString);
+        
         function splitParams(paramsString) {
           const result = [];
           let currentParam = '';
@@ -39,7 +39,6 @@ export async function runSuiteCommand(command){
           return result;
         }  
         const args = splitParams(paramsString);
-        console.log("Args after split:: ", args);
         return args;
        }
 
@@ -84,7 +83,7 @@ export async function runSuiteCommand(command){
         };
       
           let res = await axios.post('http://35.192.211.225:8001/api/disconnectNE/', {...rb})
-          console.log("Disconnect result: ", res);
+          
           return res;
         } else if(command.includes('connectNE')){
           let data = parseCommand(command, "connect");
@@ -100,7 +99,7 @@ export async function runSuiteCommand(command){
            "connection_status": "P"
           };
         
-          console.log("Request body[Connect NE]:: ", rb);
+          
           let res = await axios.post('http://35.192.211.225:8001/api/connectNE/', {...rb})
           return res;
         } else if(command.includes('sendRcv') && command.startsWith("g40cli")) {
@@ -125,7 +124,7 @@ export async function runSuiteCommand(command){
       let splitArray = command.split("=");
       let variable_name = splitArray[0].trim();
       let sendRcvCommand = splitArray[1].trim();
-      console.log("Variable name::: ", variable_name, sendRcvCommand);
+      //console.log("Variable name::: ", variable_name, sendRcvCommand);
       let data = parseCommand(sendRcvCommand, "sendRcv");
       let requestBody = {
         "command": data[1],
@@ -141,29 +140,29 @@ export async function runSuiteCommand(command){
         "handle": data[0]
       };
       let res = await axios.post('http://35.192.211.225:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
-      console.log("Response of sendrcv in CP: ", res);
+      //console.log("Response of sendrcv in CP: ", res);
       localStorage.setItem(variable_name, res.data);
       return res;
      } else if(command.includes("g40cli") && command.includes("=") && command.includes('retDataToTables(')){
         let arr = command.split("=");
         //xconState1 = g40cli.retDataToTables(showXcon1)
         let retData = parseCommand(arr[1].trim(), "retDataToTables");
-        console.log("Ret data [parsed]:: ", retData);
+        //console.log("Ret data [parsed]:: ", retData);
         let getLSData = localStorage.getItem(retData); 
-        console.log("Fetched Localhost Data:::", getLSData, typeof getLSData);
+        //console.log("Fetched Localhost Data:::", getLSData, typeof getLSData);
         let requestBody = {
           "sendRcvData": '' + getLSData
         };
-        console.log("Request Body[sendRcv]: ", requestBody);
+        //console.log("Request Body[sendRcv]: ", requestBody);
         let res = await axios.post('http://35.192.211.225:8001/api/retDataToTab/?Content-Type=application/json', {...requestBody})
         localStorage.setItem(arr[0].trim(), JSON.stringify(res.data)); 
         return res;
      } else if(command.startsWith("comparePairs")){
         let parsedArray = parseCompairPair(command);
-        console.log("Parsed Array::: ", parsedArray);
+        //console.log("Parsed Array::: ", parsedArray);
         let matches = parsedArray[1].match(/^([^[]+)\['([^']+)'\](?:\['([^']+)'\])?$/);
         if (!matches) {
-          console.log("Invalid input string format");
+          //console.log("Invalid input string format");
           throw new Error('Invalid input string format');
         }
         let [, variable, key1, key2] = matches;
@@ -171,21 +170,21 @@ export async function runSuiteCommand(command){
         if (key2) {
           resultArray.push(key2);
         }
-        console.log("Result array:::: ", resultArray);
+        //console.log("Result array:::: ", resultArray);
         let getFromLS = JSON.parse(localStorage.getItem(resultArray[0]));
-        console.log("Get From lS: ", getFromLS);
+        //console.log("Get From lS: ", getFromLS);
         if(getFromLS){
           let compare_pair_payload = {
             "stash": "notStash",
             "Compare_input": getFromLS[resultArray[1]][resultArray[2]],
             "Compare_result": parsedArray[2].slice(1,-1)
           }
-          console.log("Compare pair payload:::: ", compare_pair_payload);
+          //console.log("Compare pair payload:::: ", compare_pair_payload);
           let res = await axios.post("http://35.192.211.225:8001/api/compare_pair/?Content-Type=application/json", {... compare_pair_payload})
           return res;
         }
      } else {
-       console.log("Nothing found");
+       //console.log("Nothing found");
      }
      } catch (error) {
         return error;

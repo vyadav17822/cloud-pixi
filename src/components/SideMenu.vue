@@ -102,7 +102,7 @@ export default {
       }
     },
     togglePause(){
-      console.log("Inside the toggle pause::: ", this.isPaused);
+      //console.log("Inside the toggle pause::: ", this.isPaused);
       if(this.isPaused == 'true'){
         sessionStorage.setItem('isSuitePaused', 'false');
         this.isPaused = false;

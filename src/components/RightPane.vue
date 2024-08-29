@@ -157,7 +157,7 @@ export default {
         }
     },
     mounted() {
-        console.log(this.historicalData, "historicaldata");
+        //console.log(this.historicalData, "historicaldata");
     },
     watch:{
         testSuiteUUID(newValue){
@@ -171,10 +171,10 @@ export default {
     },
     methods: {
        async getMetaData() {
-            let url = 'http://35.192.211.225:8000/metadata/?Content-Type=application/json&bucket_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b';
+            let url = 'http://35.192.211.225:8000/metadata/?Content-Type=application/json&bucket_uuid='+this.testSuiteUUID;
           await  axios.get(url)
                 .then(res => {
-                    console.log('Res:: ', res, typeof res);
+                    //console.log('Res:: ', res, typeof res);
                     this.metaData = res.data[0];
                 })
                 .catch(error => {
@@ -182,19 +182,20 @@ export default {
                 })
         },
      async getHistoricalData() {
-            let url = 'http://35.192.211.225:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b';
+        //console.log(this.testSuiteUUID);
+            let url = 'http://35.192.211.225:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid='+this.testSuiteUUID;
            await axios.get(url)
                 .then(res => {
-                    console.log('Res:: ', res.data, typeof res);
+                    //console.log('Res:: ', res.data, typeof res);
                     this.historicalData = res.data[0];
-                    console.log(this.historicalData);
+                    //console.log(this.historicalData);
                 })
                 .catch(error => {
                     console.log("Error in Fetching the right Pane:: ", error);
                 })
         },
         fileDownload(response, title) {
-            console.log("Title: ",title)
+            //console.log("Title: ",title)
             const url = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = url
@@ -203,7 +204,8 @@ export default {
             link.click()
         },
         downloadWithAxios() {
-            let url = "http://35.192.211.225:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b";
+            //console.log(this.testSuiteUUID);
+            let url = "http://35.192.211.225:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid="+this.testSuiteUUID;
             axios({
                 method: 'get',
                 url,
@@ -233,6 +235,10 @@ export default {
 :deep(.p-tabview-panels){
     top: 89px;
     position: absolute;
+}
+
+:deep(.p-tabview-panel){
+    height: 20%;
 }
 
 .rightpaneview {

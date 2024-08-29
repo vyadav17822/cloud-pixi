@@ -23,7 +23,7 @@ const fitAddon = new FitAddon();
 const terminal = new Terminal({
   termName: "logWindow",
   cols: 130,
-  rows:9,
+  rows:15,
   screenKeys: true,
   convertEol: true
 });
@@ -53,7 +53,7 @@ export default {
        axios.get("http://35.192.211.225:8001/api/logs/?Content-Type=application/json").then(
       //axios.get("http://localhost:3003/getlog").then(
         (response) => {
-          console.log("Response::: ", response);
+          //console.log("Response::: ", response);
           // this.logsData = response.data.logs.join("\n");
           terminal.write(response.data.logs.join());
         }).catch(error => {

@@ -83,6 +83,7 @@
         folder:[ { name: 'G30', code: 'g30' }, { name: 'G40', code: 'g40' },],
         files: [],
         sendReload:true,
+        testSuiteUUID: String,
       };
     },
     methods: {
@@ -102,7 +103,7 @@
           let fileType2 = (this.$refs.fileupload.files[1].name).split('.')[1];
           if(name1 === name2){
             if(fileType1 !== fileType2 && (fileType1 === "xlsx" || fileType1 === "yml") && (fileType2 === "xlsx" || fileType2 === "yml")){
-              console.log(this.$refs.fileupload.files[0]);
+              //console.log(this.$refs.fileupload.files[0]);
               this.fileSelected = true;
               return true;
             } else {
@@ -124,9 +125,10 @@
         const file1 = this.$refs.fileupload.files[0];
         //const headers = { 'Content-Type': 'application/json' };
         axios.get('http://35.192.211.225:8001/api/file_validation_db/?Content-Type=application/json&test_suite_file_name='+file1.name+'&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7').then((res) => {
-          console.log(res.data); // binary representation of the file
-          console.log(res.status); // HTTP status
-          if(res.data==true){
+          //console.log(res.data); // binary representation of the file
+          //console.log(res.status); // HTTP status
+          this.testSuiteUUID= res.data.test_suite_uuid;
+          if(res.data.success==true){
           this.$confirm.require({
                 message: 'File Already exists! Are you sure you want to proceed?',
                 header: 'Confirmation',
@@ -149,17 +151,18 @@
           }
 
           //this.$toast.add({ severity: 'success', summary: 'Information', detail: 'File uploaded successfully', life: 5000 });
-          this.$emit("sendReload",this.sendReload);
+          //this.$emit("sendReload",this.sendReload,this.testSuiteUUID);
         }).catch(err => {
           this.$toast.add({ severity: 'error', summary: 'Information', detail: err, life: 5000 });
         });
       },
       async customBase64Uploader() {
-        console.log(this.selectedfolder);
+        //console.log(this.selectedfolder);
         const file1 = this.$refs.fileupload.files[0];
         const file2 = this.$refs.fileupload.files[1];
-        console.log(file1);
-        console.log(file2);
+        //console.log(file1);
+        //console.log(file2);
+        //console.log(this.testSuiteUUID);
         const formData = new FormData();
         formData.append('file1', file1);
         formData.append('file2', file2)
@@ -167,15 +170,16 @@
         formData.append('filename1', file1.name);
         formData.append('filename2', file2.name);
         formData.append('folder', this.selectedfolder.code + '/cli');
-        formData.append('test_suite_uuid', 'ae25c605-f9e0-4ac3-bdb3-ebb43b');
+        formData.append('test_suite_uuid', this.testSuiteUUID);
         formData.append('userid_uuid', 'e5ed4652-96ea-49ba-b3bb-f84fd7');
         const headers = { 'Content-Type': 'multipart/form-data' };
-        console.log(formData);
+        //console.log(formData);
+        // eslint-disable-next-line no-unused-vars
         axios.post('http://35.192.211.225:8001/api/upload_with_structure/', formData, { headers }).then((res) => {
-          console.log(res.data); // binary representation of the file
-          console.log(res.status); // HTTP status
+          //console.log(res.data); // binary representation of the file
+          //console.log(res.status); // HTTP status
           this.$toast.add({ severity: 'success', summary: 'Success', detail: 'File uploaded successfully', life: 5000 });
-          this.$emit("sendReload",this.sendReload);
+          this.$emit("sendReload",this.sendReload, this.testSuiteUUID);
         }).catch(err => {
           this.$toast.add({ severity: 'error', summary: 'Information', detail: err, life: 5000 });
         });
