@@ -211,11 +211,11 @@ export default {
             axios({
                 method: 'get',
                 url,
-                headers: {
-                    "Access-Control-Allow-Origin": "*"
-                }
+                
             })
-                .then()
+                .then((response)=>{
+                    this.fileDownload(response,this.historicalData.log_file_name);
+                })
                 .catch(() => console.log('error occured'))
         }
     },
