@@ -73,7 +73,7 @@
                                 <td style="text-align: center">{{ historicalData.executed_at.split('T')[0] || "NA" }}</td>
                                 <td style="text-align: left; word-wrap:break-word;" class="file-dwnld" @click="downloadWithAxios()"><i
                                         class="fa-solid fa-arrow-down"></i>
-                                    {{ historicalData.logs_path.substring(historicalData.logs_path.lastIndexOf('/') + 1) }} </td>
+                                    {{ historicalData.log_file_name }} </td>
                             </tr>
                         </tbody>
                     </table>
@@ -183,12 +183,13 @@ export default {
         },
      async getHistoricalData() {
         //console.log(this.testSuiteUUID);
-            let url = 'http://35.192.211.225:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid='+this.testSuiteUUID;
+           // let url = 'http://35.192.211.225:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid='+this.testSuiteUUID;
+           let url = 'http://35.192.211.225:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b';
            await axios.get(url)
                 .then(res => {
                     //console.log('Res:: ', res.data, typeof res);
-                    this.historicalData = res.data[0];
-                    //console.log(this.historicalData);
+                    this.historicalData = res.data;
+                    console.log(this.historicalData);
                 })
                 .catch(error => {
                     console.log("Error in Fetching the right Pane:: ", error);
@@ -204,8 +205,9 @@ export default {
             link.click()
         },
         downloadWithAxios() {
-            //console.log(this.testSuiteUUID);
-            let url = "http://35.192.211.225:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid="+this.testSuiteUUID;
+            console.log(this.historicalData.logs_path);
+            //let url = "http://35.192.211.225:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid="+this.testSuiteUUID;
+            let url =this.historicalData.logs_path;
             axios({
                 method: 'get',
                 url,
@@ -213,15 +215,7 @@ export default {
                     "Access-Control-Allow-Origin": "*"
                 }
             })
-                .then((response)=>{
-                    let url = response.logs_path;
-                    axios.get({
-                        url,
-                        headers: {
-                         "Access-Control-Allow-Origin": "*"
-                }
-                    }).then().catch(()=> console.log('error occured'))
-                })
+                .then()
                 .catch(() => console.log('error occured'))
         }
     },
