@@ -229,10 +229,9 @@ export default {
 :deep(.p-tabview-panels){
     top: 89px;
     position: absolute;
-}
-
-:deep(.p-tabview-panel){
-    height: 20%;
+    height: 49%;
+    overflow: hidden;
+    overflow-y: scroll;
 }
 
 .rightpaneview {
@@ -262,6 +261,8 @@ export default {
 
 .table{
     color: #000;
+    overflow: scroll;
+    height :10%;
 }
 
 .rightpane-header {
