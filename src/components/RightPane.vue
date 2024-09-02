@@ -231,7 +231,7 @@ export default {
     position: absolute;
     height: 49%;
     overflow: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .rightpaneview {
