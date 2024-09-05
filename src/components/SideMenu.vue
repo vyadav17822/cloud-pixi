@@ -9,7 +9,7 @@
       <!-- <img class="run-suite-icon" alt="" src="/images/run-suite@2x.png" /> -->
       <div class="run-suite-icon"><span class="tooltiptext">Run Suite</span><i class="fas fa-running" @click ="handleRunSuite" style="color:white;font-size: 20px;"></i></div>
       <div class="logs1-icon"><span class="tooltiptext">Logs</span><img class="logs-icon" alt="" src="/images/logs@2x.png" @click="handleShowLogs"/></div>
-      <div class="explore1-icon"><span class="tooltiptext">Explore</span><img class="explore-icon" alt="" src="/images/explore@2x.png"  /></div>
+      <div class="explore1-icon"><span class="tooltiptext">Explore</span><img class="explore-icon" alt="" src="/images/explore@2x.png"  @click="showExplorer"/></div>
       <div class="terminal-icon" @click="openWebShell" target="_blank" style="background-color: #001733; color: white;" ><span class="tooltiptext">Open WebShell</span><i class="fa-solid fa-terminal" style="font-size: 20px;"></i></div>
       <div class="config-icon" @click="openConfig()" style="background-color: #001733; color: white;"><span class="tooltiptext">Config</span><i class="fa-solid fa-gears" style="font-size: 20px;"></i></div>
     </div>
@@ -17,7 +17,7 @@
       <div class="sub-header-child" >
         <span :class="showActionPane ? 'right-icon' : 'right-icon-enabled'" @click="handleActionPane"><i class="pi pi-angle-double-right" style="color:white" ></i></span>
       </div>
-
+      <ExplorerModal ref="explorer" @folderSelected="sendFolderToDashboard"/>
     </div>
     <div class="card flex justify-center">
     <Dialog v-model:visible="visible" modal header="Config Settings" :style="{ width: '32rem', height: '15rem' }">
@@ -51,9 +51,13 @@
 </template>
 
 <script>
-import 'primeicons/primeicons.css'
+import 'primeicons/primeicons.css';
+import ExplorerModal from './ExplorerModal.vue';
 export default {
   name: 'SideMenu',
+  components:{
+    ExplorerModal,
+  },
   data() {
     return {
       showActionPane: true,
@@ -64,6 +68,7 @@ export default {
       pauseOnFail: false,
       abortOnFail: false,
       singleStep: false,
+      selectedFolder:String,
       isAborted: localStorage.getItem('isSuiteAborted') || "false",
       tooltipText: localStorage.getItem('isSuiteAborted') == "true" ? 'Abort Clear' : 'Abort Suite',
       isPaused: sessionStorage.getItem('isSuitePaused') || "false",
@@ -92,6 +97,9 @@ export default {
     }
   },
   methods: {
+    sendFolderToDashboard(folder){
+      this.$emit("sendFolderToDashboard",folder);
+    },
     toggleAbort() {
       if (this.isAborted == "true") {
         this.isAborted = "false"
@@ -101,6 +109,7 @@ export default {
         this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });     
       }
     },
+
     togglePause(){
       //console.log("Inside the toggle pause::: ", this.isPaused);
       if(this.isPaused == 'true'){
@@ -125,6 +134,9 @@ export default {
         this.showLogs = false
       }
       this.$emit("showLogs", this.showLogs)
+    },
+    showExplorer() {
+      this.$refs.explorer.open();
     },
     handleRunSuite() {
       this.$emit("runSuite", this.runSuite);

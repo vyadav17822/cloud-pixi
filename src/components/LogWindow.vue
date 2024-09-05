@@ -48,6 +48,11 @@ export default {
       default: true
     },
   },
+  updated(){
+    if(this.showLogsEnabled==true){
+    this.getLogs();
+    }
+  },
   methods: {
     getLogs() {
        axios.get("http://35.192.211.225:8001/api/logs/?Content-Type=application/json").then(

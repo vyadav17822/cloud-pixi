@@ -1,6 +1,6 @@
 <template>
 
-    <LeftPane :treeData="finalData" @emitData="handleEventData"  />
+    <LeftPane :treeData="treeData" @emitData="handleEventData"  @folderToShow="getFolder"/>
 
 </template>
 
@@ -13,6 +13,10 @@ export default {
       leftPaneTestSuiteUUID:{
         type:String,
         default:''
+      },
+      selectedFolder:{
+        type: String,
+        default:''
       }
     },
     components: {
@@ -22,6 +26,7 @@ export default {
         return {
         loadSuiteData: [],
         jsonData: [],
+        treeData:[],
         finalData:[],
         
       }
@@ -32,12 +37,36 @@ export default {
     updated(){
         
     },
+    watch:{
+        selectedFolder(newValue){
+         if(newValue!==null&&newValue!==undefined&&newValue!==''){
+            this.getFolder();
+         }
+        }
+
+    },
     methods: {
-      
         handleEventData(data,testSuiteUUID){
         this.loadSuiteData=data;
         this.$emit("sendData",this.loadSuiteData,testSuiteUUID);
      
+      },
+
+     
+
+      getFolder(){
+        if(this.selectedFolder!='all'){
+       for(let i in this.finalData){
+          if(this.finalData[i].name==this.selectedFolder){
+           let value=[];
+           value.push(this.finalData[i]);
+           this.treeData=value;
+            break;
+          }
+       }
+      }else{
+        this.treeData=this.finalData;
+      }
       },
       
       convertWithParentPath(data, parentPath = '') {
@@ -81,6 +110,7 @@ export default {
           await this.refreshData();
           //console.log(this.jsonData);
           this.finalData=this.jsonData[0].children;
+          this.treeData=this.finalData;
 
        
         })

@@ -1,8 +1,8 @@
 <template>
   <Header @sendReload="sendReloadToLeftPanel" />
   <Toast />
-  <SideMenu ref="sidemenu" @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" />
-  <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" :leftPaneTestSuiteUUID="leftPaneTestSuiteUUID"/>
+  <SideMenu ref="sidemenu" @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" @sendFolderToDashboard="sendFolderToLeftPane" />
+  <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" :leftPaneTestSuiteUUID="leftPaneTestSuiteUUID" :selectedFolder="selectedFolder"/>
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
   :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" :testSuiteUUID="testSuiteUUID" />
   <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID" :showLogsEnabled="showLogsEnabled"/>
@@ -53,6 +53,7 @@ export default defineComponent({
       componentKey: 0,
       testSuiteUUID: '',
       leftPaneTestSuiteUUID:'',
+      selectedFolder:'',
 
     };
   },
@@ -67,6 +68,9 @@ export default defineComponent({
       this.leftPaneTestSuiteUUID= testSuiteuuid;
       //console.log(this.testSuiteUUID);  
       this.componentKey += 1;  
+    },
+    sendFolderToLeftPane(folder){
+      this.selectedFolder=folder;
     },
     showLogs(showLogsEnabled) {
       this.showLogsEnabled = showLogsEnabled;
@@ -168,6 +172,8 @@ export default defineComponent({
     sendDatatoLoadSuite(data,testSuiteUUID) {
       this.loadSuiteData = data;
       this.testSuiteUUID=testSuiteUUID;
+      sessionStorage.setItem('pauseOnFailIndex', 0);
+      
       //console.log(this.testSuiteUUID);
       //console.log("this.data " + this.loadSuiteData);
     },
