@@ -35,7 +35,7 @@ export default {
   methods: {
     reNew() {
       setInterval(() =>{
-        axios.get("http://35.192.211.225:8001/api/logs/?Content-Type=application/json").then(
+        axios.get("http://34.30.27.29:8001/api/logs/?Content-Type=application/json").then(
       (response) =>{
         //console.log("----- response:: ",response);
         terminal.write(response.data.join());
@@ -183,7 +183,7 @@ export default {
 
             //console.log("Request body:: ", rb);
 
-            axios.post('http://35.192.211.225:8001/api/disconnectNE/', {...rb})
+            axios.post('http://34.30.27.29:8001/api/disconnectNE/', {...rb})
             .then(res => {
               terminal.write(res.data["message"]);
               terminal.write('\n');
@@ -211,7 +211,7 @@ export default {
             };
 
             //console.log("Request body:: ", rb);
-            axios.post('http://35.192.211.225:8001/api/connectNE/', {...rb})
+            axios.post('http://34.30.27.29:8001/api/connectNE/', {...rb})
             .then(res => {
               //console.log("Response of ConnectNE:: ", res);
               terminal.write(res.data["\n"]);
@@ -256,7 +256,7 @@ export default {
               "rcvOnly": false,
               "handle": data[0]
             };
-            axios.post('http://35.192.211.225:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
+            axios.post('http://34.30.27.29:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
             .then(res => {
               terminal.write(res.data);
               return res.data;
@@ -282,7 +282,7 @@ export default {
           "rcvOnly": false,
           "handle": data[0]
         };
-        axios.post('http://35.192.211.225:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
+        axios.post('http://34.30.27.29:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
         .then(res => {
           terminal.write(res.data);
           localStorage.setItem(variable_name, res.data);
@@ -298,7 +298,7 @@ export default {
           "sendRcvData": '' + getLSData
         };
         //console.log("Request Body[sendRcv]: ", requestBody);
-        axios.post('http://35.192.211.225:8001/api/retDataToTab/?Content-Type=application/json', {...requestBody})
+        axios.post('http://34.30.27.29:8001/api/retDataToTab/?Content-Type=application/json', {...requestBody})
         .then(res => {
           //console.log("Result of retDataToTables::: ", res, typeof res);
           localStorage.setItem(arr[0].trim(), JSON.stringify(res.data)); 
@@ -328,7 +328,7 @@ export default {
             "Compare_result": parsedArray[2].slice(1,-1)
           }
           //console.log("Compare pair payload:::: ", compare_pair_payload);
-          axios.post("http://35.192.211.225:8001/api/compare_pair/?Content-Type=application/json", {... compare_pair_payload})
+          axios.post("http://34.30.27.29:8001/api/compare_pair/?Content-Type=application/json", {... compare_pair_payload})
           .then(res => {
             //console.log("Res:::: ", res);
             terminal.write(res.data);

@@ -1,7 +1,6 @@
 <template>
   <div class="log-window" v-if="showLogsEnabled">
-      <div class="group-parent" id ="log-container">
-      </div>
+    <div class="group-parent" id="log-container"></div>
     <div class="log-header">
       <div class="logs">Logs</div>
       <div class="log-header-child" />
@@ -17,66 +16,163 @@
 import axios from 'axios';
 import { Terminal } from 'xterm';
 import 'xterm/css/xterm.css';
-import { FitAddon } from 'xterm-addon-fit';
-
-const fitAddon = new FitAddon();
-const terminal = new Terminal({
-  termName: "logWindow",
-  cols: 130,
-  rows:15,
-  screenKeys: true,
-  convertEol: true
-});
-
-terminal.loadAddon(fitAddon);
 
 export default {
   name: "LogWindow",
-  mounted() {
-    this.getLogs();
-    this.initializeTerminal();
-  },
-
   data() {
     return {
-      logsData: null
+      terminal: null,
+      logsData: '',
+      initialized: false,
+      ws: null,
+      logs: [],
+      stopPolling: false,
+      retryInterval: 5000
     };
   },
   props: {
     showLogsEnabled: {
       type: Boolean,
       default: true
-    },
+    }
   },
-  updated(){
-    if(this.showLogsEnabled==true){
-    this.getLogs();
+  watch: {
+    showLogsEnabled(newVal) {
+      if (newVal) {
+        this.$nextTick(() => {
+          this.initializeTerminal();
+          //this.start();
+        });
+      } else {
+        this.clearTerminal();
+        //this.stop();
+      }
     }
   },
   methods: {
-    getLogs() {
-       axios.get("http://35.192.211.225:8001/api/logs/?Content-Type=application/json").then(
-      //axios.get("http://localhost:3003/getlog").then(
-        (response) => {
-          //console.log("Response::: ", response);
-          // this.logsData = response.data.logs.join("\n");
-          terminal.write(response.data.logs.join());
-        }).catch(error => {
-          console.log(error);
-        })
+    start() {
+      if (this.ws) {
+        this.ws.close();
+      }this.stopPolling = false;
+      this.connect();
     },
     initializeTerminal() {
-      fitAddon.fit();
-      terminal.open(document.getElementById('log-container'));
-      terminal.write('Welcome to cpixi \n');
-      terminal.write('users@pixi-log$ ');// Display prompt initially
+      if (this.initialized) return; // Prevent reinitialization
+
+      this.terminal = new Terminal({
+        termName: "logWindow",
+        cols: 130,
+        rows: 15,
+        screenKeys: true,
+        convertEol: true
+      });
+
+      this.terminal.open(document.getElementById('log-container'));
+      this.terminal.write('Welcome to cpixi \n');
+      this.terminal.write('users@pixi-log$ '); // Display prompt initially
+      if (this.logsData) {
+        this.terminal.write(this.logsData);
+      }
+      this.initialized = true;
     },
+
+    connect() {
+      this.ws = new WebSocket('ws://34.30.27.29:8003/ws/logs/');
+ 
+      this.ws.onopen = () => {
+        //console.log('WebSocket connection opened');
+        this.pollLogs();
+      };
+ 
+      this.ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.message === "No logs available") {
+          if (!this.stopPolling) {
+            setTimeout(() => this.pollLogs(), this.retryInterval);
+          }
+        } else if (data.logs) {
+          this.logs = data.logs.join('\n')+'\n';
+          this.logsData += this.logs + '\n';
+          if (this.terminal) {
+            // Append new logs to the terminal
+            //const newLogs = .logs.join('\n');
+            this.terminal.write(this.logs + '\n');
+             // Append to existing logsData
+            //console.log(this.logs);
+          }
+          if (!this.stopPolling) {
+            this.pollLogs(); // Continue polling if not stopped
+          }
+        }
+      };
+ 
+      this.ws.onclose = () => {
+        //console.log('WebSocket connection closed');
+        if (!this.stopPolling) {
+          // Optionally, you could restart the connection here
+          // this.connect();
+        }
+      };
+ 
+      this.ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        if (!this.stopPolling) {
+          setTimeout(() => this.connect(), this.retryInterval);
+        }
+      };
+    },
+    pollLogs() {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ action: 'get_logs' }));
+      }
+    },
+    stop() {
+      this.stopPolling = true;
+      if (this.ws) {
+        this.ws.close();
+      }
+    },
+    clearTerminal() {
+      if (this.terminal) {
+        //this.logs = this.terminal.buffer.active.getLine(0).translateToString(true);
+        //console.log(this.logsData);
+        this.terminal.dispose();
+        this.terminal = null;
+        this.initialized = false;
+      }
+    },
+    getLogs() {
+      axios.get("http://34.30.27.29:8001/api/logs/?Content-Type=application/json") // Replace with your actual API URL
+        .then((response) => {
+          if (this.terminal) {
+            // Append new logs to the terminal
+            const newLogs = response.data.logs.join('\n');
+            this.terminal.write(newLogs + '\n');
+            this.logs += newLogs + '\n'; // Append to existing logsData
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  mounted() {
+    if (this.showLogsEnabled) {
+      this.$nextTick(() => {
+        this.initializeTerminal();
+        //this.getLogs();
+        this.start();
+      });
+    }
+  },
+  // eslint-disable-next-line vue/no-deprecated-destroyed-lifecycle
+  beforeUnmount() {
+    this.clearTerminal();
+    this.stop();
   }
 };
 </script>
-<style>
-  
-</style>
+
 <style scoped>
 :deep(.terminal){
     height: 34.8vh;
@@ -303,4 +399,5 @@ export default {
   font-weight: 500;
   color: #80baff;
 }
+
 </style>

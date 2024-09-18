@@ -204,7 +204,7 @@ export default defineComponent({
     getLeftPane() {
       axios
         .get(
-          "http://35.192.211.225:8001/api/files/?Content-Type=application/json"
+          "http://34.30.27.29:8001/api/files/?Content-Type=application/json"
         )
         .then((res) => {
           //console.log("Result:::: [->]", res.data, typeof res.data);

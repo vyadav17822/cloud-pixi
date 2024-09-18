@@ -85,10 +85,10 @@ export default {
           //console.log(node.label);
           //console.log(parentLabel);
           if(parentLabel === 'g30'){
-            apiUrl = "http://35.192.211.225:8001/api/latest-file-versions/?Content-Type=application/json&test_suite_uuid="+node.label+"&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&folder=g30/cli";
+            apiUrl = "http://34.30.27.29:8001/api/latest-file-versions/?Content-Type=application/json&test_suite_uuid="+node.label+"&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&folder=g30/cli";
 
           }else if(parentLabel === 'g40'){
-            apiUrl = "http://35.192.211.225:8001/api/latest-file-versions/?Content-Type=application/json&test_suite_uuid="+node.label+"&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&folder=g40/cli";
+            apiUrl = "http://34.30.27.29:8001/api/latest-file-versions/?Content-Type=application/json&test_suite_uuid="+node.label+"&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&folder=g40/cli";
 
           }
           let response =await axios.get(apiUrl);
@@ -100,7 +100,7 @@ export default {
       },
       
       async getLeftPane(){
-       await axios.get('http://35.192.211.225:8001/api/files/?Content-Type=application/json')
+       await axios.get('http://34.30.27.29:8001/api/files/?Content-Type=application/json')
         .then(async res => {
          
           let finalRes = this.convertWithParentPath(res.data);

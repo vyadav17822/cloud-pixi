@@ -82,7 +82,7 @@ export async function runSuiteCommand(command){
          "disconnect_status": "P"
         };
       
-          let res = await axios.post('http://35.192.211.225:8001/api/disconnectNE/', {...rb})
+          let res = await axios.post('http://34.30.27.29:8001/api/disconnectNE/', {...rb})
           
           return res;
         } else if(command.includes('connectNE')){
@@ -100,7 +100,7 @@ export async function runSuiteCommand(command){
           };
         
           
-          let res = await axios.post('http://35.192.211.225:8001/api/connectNE/', {...rb})
+          let res = await axios.post('http://34.30.27.29:8001/api/connectNE/', {...rb})
           return res;
         } else if(command.includes('sendRcv') && command.startsWith("g40cli")) {
           let data = parseCommand(command, "sendRcv");
@@ -117,7 +117,7 @@ export async function runSuiteCommand(command){
             "rcvOnly": false,
             "handle": data[0]
           };
-          let res = await axios.post('http://35.192.211.225:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
+          let res = await axios.post('http://34.30.27.29:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
           return res;
         }
      } else if(!command.startsWith("g40cli") && command.includes("g40cli") && command.includes("=") && command.includes('sendRcv(')){
@@ -139,7 +139,7 @@ export async function runSuiteCommand(command){
         "rcvOnly": false,
         "handle": data[0]
       };
-      let res = await axios.post('http://35.192.211.225:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
+      let res = await axios.post('http://34.30.27.29:8001/api/sendrcv/?Content-Type=application/json', {...requestBody})
       //console.log("Response of sendrcv in CP: ", res);
       localStorage.setItem(variable_name, res.data);
       return res;
@@ -154,7 +154,7 @@ export async function runSuiteCommand(command){
           "sendRcvData": '' + getLSData
         };
         //console.log("Request Body[sendRcv]: ", requestBody);
-        let res = await axios.post('http://35.192.211.225:8001/api/retDataToTab/?Content-Type=application/json', {...requestBody})
+        let res = await axios.post('http://34.30.27.29:8001/api/retDataToTab/?Content-Type=application/json', {...requestBody})
         localStorage.setItem(arr[0].trim(), JSON.stringify(res.data)); 
         return res;
      } else if(command.startsWith("comparePairs")){
@@ -180,7 +180,7 @@ export async function runSuiteCommand(command){
             "Compare_result": parsedArray[2].slice(1,-1)
           }
           //console.log("Compare pair payload:::: ", compare_pair_payload);
-          let res = await axios.post("http://35.192.211.225:8001/api/compare_pair/?Content-Type=application/json", {... compare_pair_payload})
+          let res = await axios.post("http://34.30.27.29:8001/api/compare_pair/?Content-Type=application/json", {... compare_pair_payload})
           return res;
         }
      } else {
