@@ -94,7 +94,14 @@ export default defineComponent({
         let startIndex = 0;
         let isSuitePausedRunSuite = sessionStorage.getItem('isSuitePaused');
         if(isSuitePausedRunSuite ==='true'){
-          this.$toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please Clear Pause First', life: 5000 });
+          this.$toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please Clear Pause', life: 5000 });
+          this.isRunSuiteClicked=false;
+          return;
+        }
+        let isSuiteAbortedRunSuite = localStorage.getItem("isSuiteAborted");
+        if(isSuiteAbortedRunSuite==='true'){
+          this.$toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please Clear Abort', life: 5000 });
+          this.isRunSuiteClicked=false;
           return;
         }
         let isAbortOnFailSelected = localStorage.getItem('abortOnFail');
@@ -146,6 +153,7 @@ export default defineComponent({
               if( isPauseOnFailSelected  === 'true'){
                 sessionStorage.setItem('pauseOnFailIndex', i+1);
                 this.$refs.sidemenu.togglePause();
+                this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Paused due to failure', life: 5000 });
                 break;
               }
             }
@@ -204,7 +212,7 @@ export default defineComponent({
     getLeftPane() {
       axios
         .get(
-          "http://34.30.27.29:8001/api/files/?Content-Type=application/json"
+          "http://35.188.41.6:8001/api/files/?Content-Type=application/json"
         )
         .then((res) => {
           //console.log("Result:::: [->]", res.data, typeof res.data);
@@ -262,6 +270,7 @@ export default defineComponent({
   },
 });
 </script>
+
 <style scoped>
 .log-window-v1-child {
   position: absolute;

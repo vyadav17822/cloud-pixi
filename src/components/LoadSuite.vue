@@ -43,7 +43,7 @@
             </td>
             <td>
               <button class="btn btn-primary" @click="runCommand(suite)" style="background-color: #f3f6f9"
-                :disabled="isRunSuiteClicked">
+                :disabled="isRunButtonDisabled">
                 <i class="fa fa-play" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9"></i>
               </button>
               <button class="btn btn-primary" @click="showLog" style="background-color: #f3f6f9">
@@ -68,10 +68,14 @@ export default {
       type: Array,
       required: true,
     },
-    // eslint-disable-next-line vue/require-prop-type-constructor
-    showActionPaneEnabled: true,
-    // eslint-disable-next-line vue/require-prop-type-constructor
-    showLogsEnabled: true,
+    showActionPaneEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    showLogsEnabled: {
+      type: Boolean,
+      default: true,
+    },
     isRunSuiteClicked: {
       type: Boolean,
       default: false
@@ -85,15 +89,45 @@ export default {
       key: 1,
       rowsStatus: [],
       filteredData: [],
+      isSuiteAborted:JSON.parse(localStorage.getItem("isSuiteAborted")) || false,
+      isSuitePaused: JSON.parse(sessionStorage.getItem("isSuitePaused")) || false
     };
   },
+ 
+  mounted() {
+    this.checkStorageChanges(); // Initialize state
+
+    this.storageInterval = setInterval(this.checkStorageChanges, 1000);
+ 
+  },
+  
+  
   created() {
-    //console.log("Load suite data:: ", this.loadSuiteData);
-    //console.log("showActionPane" + this.showActionPaneEnabled);
-    //console.log("showActionPane" + this.showLogsEnabled);
+  
     
   },
+  computed: {
+    isRunButtonDisabled() {
+      const disabled = this.isRunSuiteClicked || this.isSuiteAborted || this.isSuitePaused;
+      return disabled;
+    }
+  },
   methods: {
+
+    checkStorageChanges() {
+      const abortedValue = JSON.parse(localStorage.getItem("isSuiteAborted"));
+      const pausedValue = JSON.parse(sessionStorage.getItem("isSuitePaused"));
+
+      if (abortedValue !== this.isSuiteAborted) {
+        this.isSuiteAborted = abortedValue;
+      }
+
+      if (pausedValue !== this.isSuitePaused) {
+        this.isSuitePaused = pausedValue;
+      }
+    },
+    
+
     async runCommand(suite) {
       let command = suite.Code;
       suite.status = "1";

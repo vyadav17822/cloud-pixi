@@ -171,7 +171,7 @@ export default {
     },
     methods: {
        async getMetaData() {
-            let url = 'http://34.30.27.29:8000/metadata/?Content-Type=application/json&bucket_uuid='+this.testSuiteUUID;
+            let url = 'http://35.188.41.6:8000/metadata/?Content-Type=application/json&bucket_uuid='+this.testSuiteUUID;
           await  axios.get(url)
                 .then(res => {
                     //console.log('Res:: ', res, typeof res);
@@ -183,8 +183,8 @@ export default {
         },
      async getHistoricalData() {
         //console.log(this.testSuiteUUID);
-           // let url = 'http://34.30.27.29:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid='+this.testSuiteUUID;
-           let url = 'http://34.30.27.29:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b';
+           // let url = 'http://35.188.41.6:8000/test-execution/?Content-Type=application/json&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid='+this.testSuiteUUID;
+           let url = 'http://35.188.41.6:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid=ae25c605-f9e0-4ac3-bdb3-ebb43b';
            await axios.get(url)
                 .then(res => {
                     //console.log('Res:: ', res.data, typeof res);
@@ -206,7 +206,7 @@ export default {
         },
         downloadWithAxios() {
             console.log(this.historicalData.logs_path);
-            //let url = "http://34.30.27.29:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid="+this.testSuiteUUID;
+            //let url = "http://35.188.41.6:8001/api/test_exec_data/?userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7&test_suite_uuid="+this.testSuiteUUID;
             let url =this.historicalData.logs_path;
             axios({
                 method: 'get',

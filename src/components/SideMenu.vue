@@ -55,6 +55,7 @@ import 'primeicons/primeicons.css';
 import ExplorerModal from './ExplorerModal.vue';
 export default {
   name: 'SideMenu',
+  emits: ["showActionPanel", "showLogs", "runSuite","sendFolderToDashboard"],
   components:{
     ExplorerModal,
   },
@@ -102,10 +103,12 @@ export default {
     },
     toggleAbort() {
       if (this.isAborted == "true") {
-        this.isAborted = "false"
-        this.$toast.add({ severity: 'success', summary: 'Information', detail: 'Abort Cleared', life: 5000 });
+        this.isAborted = "false";
+        localStorage.setItem("isSuiteAborted",false);
+        this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Abort Cleared', life: 5000 });
       } else {
-        this.isAborted = "true"
+        this.isAborted = "true";
+        localStorage.setItem("isSuiteAborted",true);
         this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });     
       }
     },
@@ -115,9 +118,11 @@ export default {
       if(this.isPaused == 'true'){
         sessionStorage.setItem('isSuitePaused', 'false');
         this.isPaused = false;
+        this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Pause Cleared', life: 5000 });
       } else {
         sessionStorage.setItem('isSuitePaused', 'true');
         this.isPaused = true;
+        this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Pause Started', life: 5000 }); 
       }
       this.tttPause = this.isPaused == 'true' ? 'Pause Clear' : 'Pause';
     },
@@ -140,10 +145,6 @@ export default {
     },
     handleRunSuite() {
       this.$emit("runSuite", this.runSuite);
-    },
-    abortSuite() {
-      this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });
-      localStorage.setItem("isSuiteAborted", true);
     },
     handleActionPane() {
       if (this.showActionPane === false)

@@ -49,7 +49,7 @@ export default {
     onNodeSelect(node) {
       //console.log("Checking Clicked node::: ", node.parent_path, node.label);
       if (node.label.split(".")[1] === 'xlsx') {
-        let url = 'http://34.30.27.29:8001/api/bucket_files/?label=' + '' + node.parent_path + '' + node.test_suite_uuid_name+'.xlsx';
+        let url = 'http://35.188.41.6:8001/api/bucket_files/?label=' + '' + node.parent_path + '' + node.test_suite_uuid_name+'.xlsx';
         axios.get(url)
           .then(res => {
             //console.log("Result:::: [->]", JSON.parse(res.data));

@@ -70,6 +70,7 @@
   import axios  from 'axios';
   export default {
     name: 'DashboardHeader',
+    emits:["sendReload"],
     components:{
       
     },
@@ -124,7 +125,7 @@
       confirmDialog() {
         const file1 = this.$refs.fileupload.files[0];
         //const headers = { 'Content-Type': 'application/json' };
-        axios.get('http://34.30.27.29:8001/api/file_validation_db/?Content-Type=application/json&test_suite_file_name='+file1.name+'&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7').then((res) => {
+        axios.get('http://35.188.41.6:8001/api/file_validation_db/?Content-Type=application/json&test_suite_file_name='+file1.name+'&userid_uuid=e5ed4652-96ea-49ba-b3bb-f84fd7').then((res) => {
           //console.log(res.data); // binary representation of the file
           //console.log(res.status); // HTTP status
           this.testSuiteUUID= res.data.test_suite_uuid;
@@ -175,7 +176,7 @@
         const headers = { 'Content-Type': 'multipart/form-data' };
         //console.log(formData);
         // eslint-disable-next-line no-unused-vars
-        axios.post('http://34.30.27.29:8001/api/upload_with_structure/', formData, { headers }).then((res) => {
+        axios.post('http://35.188.41.6:8001/api/upload_with_structure/', formData, { headers }).then((res) => {
           //console.log(res.data); // binary representation of the file
           //console.log(res.status); // HTTP status
           this.$toast.add({ severity: 'success', summary: 'Success', detail: 'File uploaded successfully', life: 5000 });

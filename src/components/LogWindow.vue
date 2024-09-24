@@ -77,7 +77,7 @@ export default {
     },
 
     connect() {
-      this.ws = new WebSocket('ws://34.30.27.29:8003/ws/logs/');
+      this.ws = new WebSocket('ws://35.188.41.6:8003/ws/logs/');
  
       this.ws.onopen = () => {
         //console.log('WebSocket connection opened');
@@ -142,7 +142,7 @@ export default {
       }
     },
     getLogs() {
-      axios.get("http://34.30.27.29:8001/api/logs/?Content-Type=application/json") // Replace with your actual API URL
+      axios.get("http://35.188.41.6:8001/api/logs/?Content-Type=application/json") // Replace with your actual API URL
         .then((response) => {
           if (this.terminal) {
             // Append new logs to the terminal
