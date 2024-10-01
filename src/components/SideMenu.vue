@@ -1471,7 +1471,7 @@ export default {
 .abort-icon {
   position: absolute;
   top: 26.5%;
-  /* left: 10px; */
+  left: 10px;
   width: 100%;
   height: 28px;
   display: grid;
