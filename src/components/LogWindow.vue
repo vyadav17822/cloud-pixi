@@ -27,7 +27,7 @@ export default {
       ws: null,
       logs: [],
       stopPolling: false,
-      retryInterval: 5000
+      retryInterval: 1000
     };
   },
   props: {
