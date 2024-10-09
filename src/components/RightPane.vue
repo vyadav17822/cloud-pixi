@@ -171,11 +171,11 @@ export default {
     },
     methods: {
        async getMetaData() {
-            let url = 'http://35.188.41.6:8000/metadata/?Content-Type=application/json&bucket_uuid='+this.testSuiteUUID;
+            let url = 'http://35.188.41.6:8000/metadata/?Content-Type=application/json&bucket_uuid='+this.testSuiteUUID+'.xlsx';
           await  axios.get(url)
                 .then(res => {
                     //console.log('Res:: ', res, typeof res);
-                    this.metaData = res.data[0];
+                    this.metaData = res.data;
                 })
                 .catch(error => {
                     console.log("Error in Fetching the right Pane:: ", error);

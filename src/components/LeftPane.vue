@@ -70,7 +70,7 @@ export default {
         axios.get(url)
           .then(res => {
             const data = JSON.parse(res.data);
-            this.customEvent(data, node.test_suite_uuid_name.substring(0, 23));
+            this.customEvent(data, node.test_suite_uuid_name);
           })
           .catch(error => {
             console.log("Error in Fetching the left Pane:: ", error);
