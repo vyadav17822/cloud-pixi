@@ -34,6 +34,10 @@ export default {
     showLogsEnabled: {
       type: Boolean,
       default: true
+    },
+    testSuiteUUID: {
+      type: String,
+      default: ''
     }
   },
   watch: {
@@ -47,8 +51,15 @@ export default {
         this.clearTerminal();
         //this.stop();
       }
+    },
+    testSuiteUUID(newVal){
+      if(newVal){
+        this.clearTerminal();
+        this.initializeTerminal();
+      }
     }
   },
+  
   methods: {
     start() {
       if (this.ws) {
@@ -70,9 +81,9 @@ export default {
       this.terminal.open(document.getElementById('log-container'));
       this.terminal.write('Welcome to cpixi \n');
       this.terminal.write('users@pixi-log$ '); // Display prompt initially
-      if (this.logsData) {
-        this.terminal.write(this.logsData);
-      }
+      // if (this.logsData) {
+      //   this.terminal.write(this.logsData);
+      // }
       this.initialized = true;
     },
 

@@ -6,7 +6,7 @@
   <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
   :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" :testSuiteUUID="testSuiteUUID" />
   <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID" :showLogsEnabled="showLogsEnabled"/>
-  <LogWindow :showLogsEnabled="showLogsEnabled"/>
+  <LogWindow :showLogsEnabled="showLogsEnabled" :testSuiteUUID="testSuiteUUID"/>
 </template>
 <script>
 import Header from "./Header.vue";
