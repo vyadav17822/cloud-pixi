@@ -1,5 +1,9 @@
+/* eslint-disable no-unused-vars */
 import axios from "axios";
 import { uuid } from "vue-uuid";
+import Vue from 'vue';
+
+
 export async function runSuiteCommand(command) {
   function parseCommand(command, type) {
     let paramsString = null;
@@ -92,7 +96,7 @@ export async function runSuiteCommand(command) {
         localStorage.setItem("pauseOnFail",pauseOnFail);
         localStorage.setItem("abortOnFail",abortOnFail);
         localStorage.setItem("singleStep",singleStep);
-
+        closePopupWindow(data[0]);
         return res;
       } else if (command.includes("connectNE")) {
         let data = parseCommand(command, "connect");
@@ -107,7 +111,8 @@ export async function runSuiteCommand(command) {
           connect_ne_uuid: uuid.v4(),
           connection_status: "P",
         };
-
+        openPopupWindow(data[0]);
+        try{
         let res = await axios.post("http://35.188.41.6:8001/api/connectNE/", {
           ...rb,
         });
@@ -115,6 +120,10 @@ export async function runSuiteCommand(command) {
           sessionStorage.setItem(data[0], data[0]);
         }
         return res;
+      }catch(error){
+        closePopupWindow(data[0]);
+      }
+       
       } else if (command.includes("sendRcv") && command.startsWith("g40cli")) {
         let data = parseCommand(command, "sendRcv");
         let connectStatus = sessionStorage.getItem(data[0])!==null && sessionStorage.getItem(data[0]) !==undefined ? true:false;
@@ -240,5 +249,28 @@ export async function runSuiteCommand(command) {
     }
   } catch (error) {
     return error;
+  }
+  
+}
+
+let popups = {}; // Object to track open popups
+
+function openPopupWindow(label) {
+  const newWindow = window.open('/popup.html', '_blank', 'width=400,height=300');
+  
+  // Save the new window reference
+  popups[label] = newWindow;
+  console.log("Current popups:", popups);
+  // Wait for the new window to load and send the message
+  newWindow.onload = function() {
+    newWindow.postMessage(label, '*');
+  };
+}
+
+function closePopupWindow(label) {
+  
+  if (popups[label]) {
+    popups[label].close();
+    delete popups[label]; // Remove reference after closing
   }
 }

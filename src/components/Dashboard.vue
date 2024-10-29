@@ -10,6 +10,7 @@
 </template>
 <script>
 import Header from "./Header.vue";
+
 import LeftPaneView from "./LeftPaneView.vue";
 import SideMenu from "./SideMenu.vue";
 import LoadSuite from "./LoadSuite.vue";
@@ -39,7 +40,7 @@ export default defineComponent({
     LeftPaneView,
     LoadSuite,
     LogWindow,
-    RightPane
+    RightPane,
     //FileUploadModal,
   },
   data() {
@@ -54,11 +55,18 @@ export default defineComponent({
       testSuiteUUID: '',
       leftPaneTestSuiteUUID:'',
       selectedFolder:'',
+      popups: [],
 
     };
   },
 
   methods: {
+    addPopup(message) {
+      this.popups.push(message); // Add a new message to popups
+    },
+    closePopup(index) {
+      this.popups.splice(index, 1); // Remove the popup at the given index
+    },
     showActionPanel(showActionPaneEnabled) {
       this.showActionPaneEnabled = showActionPaneEnabled;
       //console.log(this.showActionPaneEnabled);
