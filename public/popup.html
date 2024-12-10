@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Popup Notification</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+    <style>
+        body {
+            margin: 0; /* Remove default margin */
+            height: 100vh; /* Full viewport height */
+            background-color: #282c34; /* Background color */
+            color: white; /* Text color */
+            display: flex;
+            flex-direction: column;
+        }
+        #app {
+            flex: 1; /* Full height for the app */
+            display: flex;
+            overflow: hidden; /* Hide overflow */
+        }
+        #log-container {
+            flex: 1; /* Full height for the terminal */
+            overflow: hidden; /* Hide overflow */
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="log-container"></div>
+    </div>
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                terminal: null,
+                initialized: false,
+                ws: null,
+                stopPolling: false,
+                retryInterval: 1000,
+                message:'',
+            },
+            mounted() {
+                this.initializeTerminal();
+                this.start();
+                window.addEventListener('resize', this.resizeTerminal); // Handle window resize
+            },
+            beforeDestroy() {
+                this.clearTerminal();
+                this.stop();
+                window.removeEventListener('resize', this.resizeTerminal); // Cleanup event listener
+            },
+            methods: {
+                initializeTerminal() {
+                    if (this.initialized) return;
+
+                    this.terminal = new Terminal({
+                        cols: Math.floor(window.innerWidth / 8), // Set columns based on width
+                        rows: Math.floor(window.innerHeight / 16), // Set rows based on height
+                        screenKeys: true,
+                        convertEol: true,
+                    });
+
+                    this.terminal.open(document.getElementById("log-container"));
+                    this.terminal.write("Welcome to cpixi \n");
+                    this.terminal.write("users@pixi-log$ ");
+                    this.initialized = true;
+                },
+                start() {
+                    if (this.ws) {
+                        this.ws.close();
+                    }
+                    this.stopPolling = false;
+                    this.connect();
+                },
+                connect() {
+                    this.ws = new WebSocket("ws://35.188.41.6:8004/ws/session_logs/");
+
+                    this.ws.onopen = () => {
+                       // console.log("WebSocket connection opened"); // For debugging
+                        this.pollLogs();
+                    };
+
+                    this.ws.onmessage = (event) => {
+                       // console.log("Message received:", event.data); // For debugging
+                        const data = JSON.parse(event.data);
+                        if (data.message === "No logs available") {
+                            if (!this.stopPolling) {
+                                setTimeout(() => this.pollLogs(), this.retryInterval);
+                            }
+                        } else if (data.logs) {
+                            const logs = data.logs.join("\n") + "\n";
+                            if (this.terminal) {
+                                this.terminal.write(logs);
+                                this.terminal.scrollToBottom(); // Ensure auto-scrolling
+                            }
+                            if (!this.stopPolling) {
+                                this.pollLogs();
+                            }
+                        }
+                    };
+
+                    this.ws.onclose = () => {
+                        //console.log("WebSocket connection closed"); // For debugging
+                        if (!this.stopPolling) {
+                            setTimeout(() => this.connect(), this.retryInterval); // Retry connection
+                        }
+                    };
+
+                    this.ws.onerror = (error) => {
+                        console.error("WebSocket error:", error);
+                        if (!this.stopPolling) {
+                            this.terminal.write("Error: WebSocket connection lost.\n");
+                            setTimeout(() => this.connect(), this.retryInterval);
+                        }
+                    };
+                },
+                pollLogs() {
+                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                        this.ws.send(JSON.stringify({ action: "get_session_logs" }));
+                    }
+                },
+                stop() {
+                    this.stopPolling = true;
+                    if (this.ws) {
+                        this.ws.close();
+                    }
+                },
+                clearTerminal() {
+                    if (this.terminal) {
+                        this.terminal.clear();
+                        this.terminal.write("Terminal cleared.\n");
+                    }
+                },
+                resizeTerminal() {
+                    if (this.terminal) {
+                        this.terminal.resize(Math.floor(window.innerWidth / 8), Math.floor(window.innerHeight / 16));
+                    }
+                },
+                handleMessage(message) {
+                    document.title = message;
+                    this.message=message;
+                    console.log(message);
+                },
+            },
+        });
+
+        window.addEventListener("message", (event) => {
+            app.handleMessage(event.data); // Update message in Vue instance
+        });
+    </script>
+</body>
+</html>

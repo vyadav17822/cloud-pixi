@@ -1,61 +1,39 @@
 <template>
   <div id="app">
-    <Header />
-    <div class="btn-cls" v-if="isHidden">
-    <router-link to="/LoadSuite"><button class="btn"> Load Suite</button></router-link>
-    <router-link to="/shell"><button class="btn"> Shells</button></router-link>
-    <!-- <router-link to="/signin"><button class="btn"> Signin</button></router-link> -->
-    <!-- <router-link to="/shell"><button class="btn"> Shells</button></router-link> -->
-    <!-- <button class='btn' @click="showTerminal()"> Shell</button> -->
-    <!-- <button class='btn' @click="goToSignUp()">Signup</button>
-    <button class='btn' @click="goToSignin()">Signin</button> -->
-    </div>
-    <router-view></router-view>
-    <div v-if="currentComponent === 'loadsuite'">
-      <LoadSuite/>
-    </div>
-    <div v-else-if="currentComponent === 'terminal'">
-      <Content />
-    </div>
+     <router-view></router-view>
   </div>
 </template>
 
 <script>
-
-import Header from './components/Header.vue';
-import Content from './components/Webshell.vue';
-import LoadSuite from './components/LoadSuite.vue';
+// import Menu from './components/Menu.vue'
+// import Webshell from './components/Webshell.vue';
+// import LoadSuite from './components/LoadSuite.vue';
 
 
 export default {
   name: 'App',
   components: {
-    Header,
-    LoadSuite,
-    Content
+  
+    // Menu
+    // LoadSuite,
+    // Webshell
   },
   data(){
     return {
       currentComponent: '',
-      isHidden: false
+      isHidden: false,
+      loadSuiteData:[]
     }
   },
   methods: {
-    showLoadSuite() {
-      this.currentComponent = 'loadsuite'
-      console.log(this.currentComponent);
-    },
-    showTerminal() {
-      this.currentComponent = 'terminal'
-      console.log(this.currentComponent);
-    },
+
     goToSignUp() {
-      console.log("hello sign up");
+
       this.currentComponent = 'signup';
       // this.$router.push("/signup");
     },
     goToSignin() {
-      console.log("Hello Sign Up");
+
       this.currentComponent = 'signin';
     },
     beforeMount() {
@@ -91,3 +69,4 @@ export default {
   margin-left: 37%;
 }
 </style>
+ 

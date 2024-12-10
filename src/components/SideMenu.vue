@@ -1,300 +1,389 @@
 <template>
-  <Header @sendReload="sendReloadToLeftPanel" />
-  <Toast />
-  <SideMenu ref="sidemenu" @showActionPanel="showActionPanel" @showLogs="showLogs" @runSuite="runSuiteWhole" @sendFolderToDashboard="sendFolderToLeftPane" />
-  <LeftPaneView :key="componentKey" @sendData="sendDatatoLoadSuite" :leftPaneTestSuiteUUID="leftPaneTestSuiteUUID" :selectedFolder="selectedFolder"/>
-  <LoadSuite :loadSuiteData="loadSuiteData" :showActionPaneEnabled="showActionPaneEnabled"
-  :showLogsEnabled="showLogsEnabled" :isRunSuiteClicked="isRunSuiteClicked" :testSuiteUUID="testSuiteUUID" />
-  <RightPane :showActionPaneEnabled="showActionPaneEnabled" :testSuiteUUID="testSuiteUUID" :showLogsEnabled="showLogsEnabled"/>
-  <LogWindow :showLogsEnabled="showLogsEnabled" :testSuiteUUID="testSuiteUUID"/>
+    <div class="side-left-menu">
+      <!-- <img class="abort-icon" alt="" src="/images/abort@2x.png" /> -->
+      <div :class="isAborted == 'true' ? 'aborted-icon' : 'abort-icon'" @click="toggleAbort"><span class="tooltiptext">{{tooltipText }}</span><i class="fa-solid fa-ban" style="color:white;font-size: 20px;"></i></div>
+      <!-- <img class="pause-icon" alt="" src="/images/pause@2x.png" /> -->
+      <div :class="isPaused == 'true' ? 'paused-icon' : 'pause-icon'" @click="togglePause"><span class="tooltiptext">{{ tttPause }}</span><i class="fa-solid fa-pause" style="color:white;font-size: 20px;"></i></div>
+      <!-- <img class="restart-icon" alt="" src="/images/restart@2x.png" /> -->
+      <div class="restart-icon" ><span class="tooltiptext">Restart Suite</span><i class="fa fa-refresh" aria-hidden="true" style="color:white;font-size: 20px;"></i></div>
+      <!-- <img class="run-suite-icon" alt="" src="/images/run-suite@2x.png" /> -->
+      <div class="run-suite-icon"><span class="tooltiptext">Run Suite</span><i class="fas fa-running" @click ="handleRunSuite" style="color:white;font-size: 20px;"></i></div>
+      <div class="logs1-icon"><span class="tooltiptext">Logs</span><img class="logs-icon" alt="" src="/images/logs@2x.png" @click="handleShowLogs"/></div>
+      <div class="explore1-icon"><span class="tooltiptext">Explore</span><img class="explore-icon" alt="" src="/images/explore@2x.png"  @click="showExplorer"/></div>
+      <div class="terminal-icon" @click="openWebShell" target="_blank" style="background-color: #001733; color: white;" ><span class="tooltiptext">Open WebShell</span><i class="fa-solid fa-terminal" style="font-size: 20px;"></i></div>
+      <div class="config-icon" @click="openConfig()" style="background-color: #001733; color: white;"><span class="tooltiptext">Config</span><i class="fa-solid fa-gears" style="font-size: 20px;"></i></div>
+    </div>
+    <div class="sub-header">
+      <div class="sub-header-child" >
+        <span :class="showActionPane ? 'right-icon' : 'right-icon-enabled'" @click="handleActionPane"><i class="pi pi-angle-double-right" style="color:white" ></i></span>
+      </div>
+      <ExplorerModal ref="explorer" @folderSelected="sendFolderToDashboard"/>
+    </div>
+    <div class="card flex justify-center">
+    <Dialog v-model:visible="visible" modal header="Config Settings" :style="{ width: '32rem', height: '15rem' }">
+      <div class="form-check form-switch">
+        <input class="form-check-input form-config-toggle" ref="pauseonfail" type="checkbox" role="switch" v-model="pauseOnFail" :checked="pauseOnFail">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Pause on Fail</label>
+      </div>
+      <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Abort on Fail</span> -->
+      <div class="form-check form-switch">
+        <input class="form-check-input form-config-toggle" ref="abortonfail" type="checkbox" role="switch" v-model="abortOnFail" :checked="abortOnFail">
+        <label class="form-check-label" for="flexSwitchAbortOnFail">Abort on Fail</label>
+      </div>
+      <!-- <span class="text-surface-500 dark:text-surface-400 block gap-4 mb-8">Single step</span> -->
+      <div class="form-check form-switch">
+        <input class="form-check-input form-config-toggle" ref="singleStep" type="checkbox" role="switch" v-model="singleStep" :checked="singleStep">
+        <label class="form-check-label" for="flexSwitchSingleStep">Single step</label>
+      </div>
+      <div class="button-div" style="margin-top: 9px;">
+        <button @click="closeConfig" type="button" class="btn btn-secondary">
+          Cancel
+        </button>
+
+        <button type="button" class="btn btn-primary" @click="saveConfigSettings()" style="margin-left: 10px;">
+          Save
+        </button>
+
+
+      </div>
+    </Dialog>
+  </div>
 </template>
+
 <script>
-import Header from "./Header.vue";
-
-import LeftPaneView from "./LeftPaneView.vue";
-import SideMenu from "./SideMenu.vue";
-import LoadSuite from "./LoadSuite.vue";
-import LogWindow from "./LogWindow.vue";
-import RightPane from "./RightPane.vue";
-import { defineComponent } from "vue";
-//import FileUploadModal from "./FileUploadModal.vue";
-// import LoadSuite from "./LoadSuite.vue";
-//import LeftPane from "./LeftPane.vue";
-import * as XLSX from "xlsx";
-import axios from "axios";
-//import { data } from "autoprefixer";
-
-export default defineComponent({
-  name: "PixiDashboard",
-  mounted() {
-    // this.getLeftPane();
-  },
-  updated() {
-    //console.log("updated");
-  },
-  components: {
-    //LoadSuite,
-    // LeftPane
-    Header,
-    SideMenu,
-    LeftPaneView,
-    LoadSuite,
-    LogWindow,
-    RightPane,
-    //FileUploadModal,
+import 'primeicons/primeicons.css';
+import ExplorerModal from './ExplorerModal.vue';
+export default {
+  name: 'SideMenu',
+  emits: ["showActionPanel", "showLogs", "runSuite","sendFolderToDashboard"],
+  components:{
+    ExplorerModal,
   },
   data() {
     return {
-      loadSuiteData: [],
-      jsonData: [],
-      showActionPaneEnabled: true,
-      showLogsEnabled: true,
-      isRunSuiteClicked: false,
-      sendReload:false,
-      componentKey: 0,
-      testSuiteUUID: '',
-      leftPaneTestSuiteUUID:'',
-      selectedFolder:'',
-      popups: [],
-
+      showActionPane: true,
+      showLogs: true,
+      runSuite: true,
+      isRunSuiteStarted: false,
+      visible: false,
+      pauseOnFail: false,
+      abortOnFail: false,
+      singleStep: false,
+      selectedFolder:String,
+      isAborted: localStorage.getItem('isSuiteAborted') || "false",
+      tooltipText: localStorage.getItem('isSuiteAborted') == "true" ? 'Abort Clear' : 'Abort Suite',
+      isPaused: sessionStorage.getItem('isSuitePaused') || "false",
+      tttPause: sessionStorage.getItem('isSuitePaused') == "true" ? 'Pause Clear' : 'Pause',
     };
   },
-
-  methods: {
-    addPopup(message) {
-      this.popups.push(message); // Add a new message to popups
-    },
-    closePopup(index) {
-      this.popups.splice(index, 1); // Remove the popup at the given index
-    },
-    showActionPanel(showActionPaneEnabled) {
-      this.showActionPaneEnabled = showActionPaneEnabled;
-      //console.log(this.showActionPaneEnabled);
-    },
-    sendReloadToLeftPanel(e,testSuiteuuid){
-      this.sendReload= e;
-      this.leftPaneTestSuiteUUID= testSuiteuuid;
-      //console.log(this.testSuiteUUID);  
-      this.componentKey += 1;  
-    },
-    sendFolderToLeftPane(folder){
-      this.selectedFolder=folder;
-    },
-    showLogs(showLogsEnabled) {
-      this.showLogsEnabled = showLogsEnabled;
-      //console.log(this.showLogsEnabled);
-    },
-    handleEventData(data) {
-      this.loadSuiteData = data;
-      //console.log("handle event data " + this.loadSuiteData);
-    },
-    runSuiteWhole(data) {
-      if (data === true) {
-        this.isRunSuiteClicked = data;
-        //console.log(data);
-        this.runSuite();
-      }
-    },
-    async runSuite() {
-      //console.log("Inside the run suite");
-
-      try {
-        let startIndex = 0;
-        let isSuitePausedRunSuite = sessionStorage.getItem('isSuitePaused');
-        if(isSuitePausedRunSuite ==='true'){
-          this.$toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please Clear Pause', life: 5000 });
-          this.isRunSuiteClicked=false;
-          return;
-        }
-        let isSuiteAbortedRunSuite = localStorage.getItem("isSuiteAborted");
-        if(isSuiteAbortedRunSuite==='true'){
-          this.$toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please Clear Abort', life: 5000 });
-          this.isRunSuiteClicked=false;
-          return;
-        }
-        let isAbortOnFailSelected = localStorage.getItem('abortOnFail');
-        let isPauseOnFailSelected = localStorage.getItem('pauseOnFail');
-        let isSingleStep = localStorage.getItem('singleStep');
-        if(isPauseOnFailSelected === 'true'){
-          startIndex = parseInt(sessionStorage.getItem('pauseOnFailIndex'))
-        }
-        let loadSuiteLength = this.loadSuiteData.length;
-        if(isSingleStep === 'true'){
-          loadSuiteLength = 1;
-        }
-        for (let i = startIndex; i < loadSuiteLength; i++) {
-          sessionStorage.setItem('pauseOnFailIndex', 0);
-          isPauseOnFailSelected = localStorage.getItem('pauseOnFail');
-          let isSuitePaused = sessionStorage.getItem('isSuitePaused')
-          //console.log(this.loadSuiteData[i]);
-          let isAborted = localStorage.getItem("isSuiteAborted");
-            if (isAborted === 'true') {
-              this.show();
-              break;
-            }
-
-            if(isSuitePaused === 'true'){
-              sessionStorage.setItem('pauseOnFailIndex', i+1);
-              this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Paused Successfully', life: 5000 });
-              break;
-            }
-
-          try {
-            this.loadSuiteData[i].status = "1";
-            
-            let result = await this.$runSuiteCommand(
-              this.loadSuiteData[i].Code
-            );
-
-            //console.log("Status:: change: ", result);
-
-            if (result.status == "200") {
-              this.loadSuiteData[i].status = "2";
-            } else {
-              this.loadSuiteData[i].status = "3";
-              if(isAbortOnFailSelected == 'true'){
-                localStorage.setItem("isSuiteAborted", 'true');
-                this.$refs.sidemenu.toggleAbort();
-                this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborted due to failure', life: 5000 });
-                break;
-              } 
-              if( isPauseOnFailSelected  === 'true'){
-                sessionStorage.setItem('pauseOnFailIndex', i+1);
-                this.$refs.sidemenu.togglePause();
-                this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Paused due to failure', life: 5000 });
-                break;
-              }
-            }
-
-          } catch (error) {
-            this.loadSuiteData[i].status = "3";
-            if(isAbortOnFailSelected == 'true'){
-              localStorage.setItem("isSuiteAborted", 'true');
-              this.$refs.sidemenu.toggleAbort();
-              this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborted due to failure', life: 5000 });
-              break;
-            }
-          }
-        }
-      } catch (error) {
-        //console.log("Error: ", error);
-      }
-      // localStorage.setItem("isSuiteAborted",false);
-      this.isRunSuiteClicked = false;
-    },
-    show() {
-      this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Aborted Successfully', life: 3000 });
-    },
-    sendDatatoLoadSuite(data,testSuiteUUID) {
-      this.loadSuiteData = data;
-      this.testSuiteUUID=testSuiteUUID;
-      sessionStorage.setItem('pauseOnFailIndex', 0);
-      
-      //console.log(this.testSuiteUUID);
-      //console.log("this.data " + this.loadSuiteData);
-    },
-    showLoadSuite() {
-      this.currentComponent = "loadsuite";
-      //console.log(this.currentComponent);
-    },
-    showTerminal() {
-      this.currentComponent = "terminal";
-      //console.log(this.currentComponent);
-    },
-
-    convertWithParentPath(data, parentPath = "") {
-      return data.map((item) => {
-        return {
-          ...item,
-          parent_path: parentPath,
-          children: item.children
-            ? this.convertWithParentPath(
-              item.children,
-              `${parentPath}${item.label}/`
-            )
-            : [],
-        };
-      });
-    },
-
-    getLeftPane() {
-      axios
-        .get(
-          "http://35.188.41.6:8001/api/files/?Content-Type=application/json"
-        )
-        .then((res) => {
-          //console.log("Result:::: [->]", res.data, typeof res.data);
-          let finalRes = this.convertWithParentPath(res.data);
-          //console.log("Final Result::: ", finalRes);
-          this.jsonData = finalRes;
-          //console.log(this.jsonData);
-        })
-        .catch((error) => {
-          console.log("Error in Fetching the left Pane:: ", error);
-        });
-    },
-
-    triggerFileInput() {
-      this.$refs.fileInput.click();
-    },
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      //console.log("FIles::::::::: ", file);
-      if (file) {
-        //console.log("Inside the file extract: ");
-        const reader = new FileReader();
-        //console.log("Reader:::::::::: ", reader);
-        reader.onload = async (event) => {
-          const data = new Uint8Array(event.target.result);
-          //console.log("Data:::: ", data);
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          //console.log("Inside the file extract[sheetName]: ", sheetName);
-          const sheet = workbook.Sheets[sheetName];
-          //console.log("Inside the file extract[sheet]: ", sheet);
-          const range = XLSX.utils.decode_range(sheet["!ref"]);
-          //console.log("Range in xlsx:: ", range);
-
-          let rowData = [];
-          for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
-            const cellAddress = { c: 1, r: rowNum };
-            const cellRef = XLSX.utils.encode_cell(cellAddress);
-            const cell = sheet[cellRef];
-            if (cell) {
-              if (!cell.v.startsWith("#")) {
-                rowData.push([rowNum, cell.v]);
-              }
-            }
-            this.loadSuiteData = rowData;
-            // console.log("Row data after fetching from the file:: ", rowData);
-          }
-        };
-        reader.readAsArrayBuffer(file);
-        //console.log("Row data::: ", this.loadSuiteData);
-      } else {
-        this.$toast.add({ severity: 'info', summary: 'Information', detail: 'No file found', life: 5000 });
-      }
-    },
+  mounted() {
+    if (localStorage.isSuiteAborted) {
+      this.isAborted = localStorage.isSuiteAborted;
+    }
+    if(sessionStorage.isSuitePaused){
+      this.isPaused = sessionStorage.isSuitePaused;
+    }
   },
-});
+  watch: {
+    isAborted(newVal) {
+      localStorage.isSuiteAborted = newVal;
+      this.isAborted = localStorage.isSuiteAborted;
+      //localStorage.setItem('isSuiteAborted', JSON.stringify(newVal));
+      this.tooltipText = this.isAborted == 'true' ? 'Abort Clear' : 'Abort Suite';
+    },
+    isPaused(val){
+      sessionStorage.isSuitePaused = val;
+      this.isPaused = sessionStorage.isSuitePaused;
+      this.tttPause = this.isPaused == 'true' ? 'Pause Clear' : 'Pause';
+    }
+  },
+  methods: {
+    sendFolderToDashboard(folder){
+      this.$emit("sendFolderToDashboard",folder);
+    },
+    toggleAbort() {
+      if (this.isAborted == "true") {
+        this.isAborted = "false";
+        localStorage.setItem("isSuiteAborted",false);
+        this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Abort Cleared', life: 5000 });
+      } else {
+        this.isAborted = "true";
+        localStorage.setItem("isSuiteAborted",true);
+        this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Aborting started', life: 5000 });     
+      }
+    },
+
+    togglePause(){
+      //console.log("Inside the toggle pause::: ", this.isPaused);
+      if(this.isPaused == 'true'){
+        sessionStorage.setItem('isSuitePaused', 'false');
+        this.isPaused = false;
+        this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Pause Cleared', life: 5000 });
+      } else {
+        sessionStorage.setItem('isSuitePaused', 'true');
+        this.isPaused = true;
+        this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Pause Started', life: 5000 }); 
+      }
+      this.tttPause = this.isPaused == 'true' ? 'Pause Clear' : 'Pause';
+    },
+    openWebShell() {
+      const loggerURL = this.$router.resolve({ name: 'Webshell' }).href;
+      window.open(loggerURL, '_blank');
+    },
+    handleShowLogs() {
+      this.isRunSuiteStarted = true;
+      if (this.showLogs === false) {
+        this.showLogs = true
+      }
+      else {
+        this.showLogs = false
+      }
+      this.$emit("showLogs", this.showLogs)
+    },
+    showExplorer() {
+      this.$refs.explorer.open();
+    },
+    handleRunSuite() {
+      this.$emit("runSuite", this.runSuite);
+    },
+    handleActionPane() {
+      if (this.showActionPane === false)
+        this.showActionPane = true;
+      else {
+        this.showActionPane = false;
+      }
+      this.$emit("showActionPanel", this.showActionPane);
+    },
+    openConfig() {
+      this.visible = true;
+      this.pauseOnFail = (localStorage.getItem("pauseOnFail") == 'true' ? true : false);
+      this.abortOnFail = (localStorage.getItem("abortOnFail") == 'true' ? true : false);
+      this.singleStep = (localStorage.getItem("singleStep") == 'true' ? true : false);
+    },
+    saveConfigSettings() {
+      localStorage.setItem('pauseOnFail', this.pauseOnFail);
+      localStorage.setItem('abortOnFail', this.abortOnFail);
+      localStorage.setItem('singleStep', this.singleStep);
+      this.visible = false;
+      this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Config setting changed successfully', life: 3000 });
+    },
+    closeConfig() {
+      this.visible = false;
+    },
+    getAbortStatus() {
+      this.isAborted = localStorage.getItem('isSuiteAborted');
+    }
+  },
+};
 </script>
 
 <style scoped>
-.log-window-v1-child {
-  position: absolute;
-  top: 654px;
-  left: 1239px;
-  width: 261px;
-  height: 29px;
+:deep(.form-config-toggle) {
+  background-color: #cdc1c1 !important;
 }
 
-.log-window-v1-item {
+.paused-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.paused-icon .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
   position: absolute;
-  top: 103px;
-  left: 1239px;
-  background-color: #1a304d;
-  width: 26px;
-  height: 29px;
+  z-index: 1;
+  top: 5px;
+  left: 34px;
+}
+
+.paused-icon {
+  position: absolute;
+  top: 22%;
+  width: 100%;
+  height: 25px;
+  background-color: red;
+  display: grid;
+  align-items: center;
+  object-fit: cover;
+  padding-left: 11px;
+}
+
+.aborted-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.aborted-icon .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 34px;
+}
+
+.aborted-icon {
+  position: absolute;
+  top: 26.5%;
+  /* left: 10px; */
+  width: 100%;
+  height: 28px;
+  background-color: red;
+  display: grid;
+  align-items: center;
+  object-fit: cover;
+  padding-left: 11px;
+}
+
+.span {
+  color: #e3e3e3;
+}
+
+.background-rectangle-icon {
+  position: absolute;
+  height: 100%;
+  top: 0%;
+  bottom: 0%;
+  left: 0px;
+  max-height: 100%;
+  width: 1206px;
+}
+
+.background-rectangle-icon1 {
+  position: absolute;
+  height: 100%;
+  top: 0%;
+  bottom: 0%;
+  left: 0px;
+  max-height: 100%;
+  width: 58px;
+}
+
+.logs {
+  position: absolute;
+  top: 6px;
+  left: 14px;
+  display: inline-block;
+  width: 90px;
+}
+
+.log-header-child {
+  position: absolute;
+  top: 30px;
+  left: 0px;
+  border-top: 1px solid #fff;
+  box-sizing: border-box;
+  width: 59px;
+  height: 1px;
+}
+
+.group-child {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border-radius: 1px;
+  border: 1px solid #fff;
+  box-sizing: border-box;
+  width: 16.3px;
+  height: 18px;
+}
+
+.vector-icon {
+  position: absolute;
+  height: 41.11%;
+  width: 20.86%;
+  top: 25.63%;
+  right: 39.62%;
+  bottom: 33.26%;
+  left: 39.52%;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.rectangle-parent {
+  position: absolute;
+  top: 6px;
+  left: 1085px;
+  width: 16.3px;
+  height: 18px;
+}
+
+.vector-icon1 {
+  position: absolute;
+  height: 12.67%;
+  width: 0.56%;
+  top: 43.11%;
+  right: 6.83%;
+  bottom: 44.22%;
+  left: 92.61%;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.vector-icon2 {
+  position: absolute;
+  height: 41.33%;
+  width: 0.74%;
+  top: 30%;
+  right: 4.95%;
+  bottom: 28.67%;
+  left: 94.31%;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+}
+
+.vector-icon3 {
+  position: absolute;
+  height: 12.33%;
+  width: 0.56%;
+  top: 44.36%;
+  right: 3.17%;
+  bottom: 43.31%;
+  left: 96.27%;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.vector-icon4 {
+  position: absolute;
+  height: 33.33%;
+  width: 0.77%;
+  top: 33.33%;
+  right: 1.25%;
+  bottom: 33.33%;
+  left: 97.98%;
+  max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+}
+
+.log-header {
+  position: absolute;
+  height: 22.06%;
+  top: 0%;
+  bottom: 77.94%;
+  left: 0px;
+  width: 1206px;
+  color: #8b99ab;
 }
 
 .background-rectangle-icon2 {
@@ -375,6 +464,18 @@ export default defineComponent({
   position: absolute;
   top: 53px;
   left: 18px;
+}
+
+.right-icon {
+  position: absolute;
+  margin-top: 0.5%;
+  margin-left: 98%;
+}
+
+.right-icon-enabled {
+  position: absolute;
+  margin-top: 0.5%;
+  margin-left: 80%;
 }
 
 .div {
@@ -761,7 +862,7 @@ export default defineComponent({
 
 .data-row-03 {
   position: absolute;
-  width: 100%;
+  width: calc(100% - 1px);
   top: 171px;
   right: 0px;
   left: 1px;
@@ -770,7 +871,7 @@ export default defineComponent({
 
 .data-row-02 {
   position: absolute;
-  width: 100%;
+  width: calc(100% - 1px);
   top: 120px;
   right: 0px;
   left: 1px;
@@ -819,7 +920,7 @@ export default defineComponent({
 
 .data-row-01 {
   position: absolute;
-  width: 100%;
+  width: calc(100% - 1px);
   top: 70px;
   right: 0px;
   left: 1px;
@@ -1363,22 +1464,25 @@ export default defineComponent({
   top: 0px;
   left: 0px;
   background-color: #001733;
-  width: 43px;
-  height: 1065px;
+  width: 3%;
+  height: 100%;
 }
 
 .abort-icon {
   position: absolute;
-  top: 184px;
-  left: 13px;
-  width: 18px;
-  height: 18px;
+  top: 26.5%;
+  left: 10px;
+  width: 100%;
+  height: 28px;
+  display: grid;
+  align-items: center;
   object-fit: cover;
+  padding-bottom: 2.5px;
 }
 
 .pause-icon {
   position: absolute;
-  top: 150px;
+  top: 22%;
   left: 15px;
   width: 18px;
   height: 18px;
@@ -1387,7 +1491,7 @@ export default defineComponent({
 
 .restart-icon {
   position: absolute;
-  top: 116px;
+  top: 17.5%;
   left: 13px;
   width: 18px;
   height: 18px;
@@ -1396,7 +1500,7 @@ export default defineComponent({
 
 .run-suite-icon {
   position: absolute;
-  top: 82px;
+  top: 13%;
   left: 13px;
   width: 18px;
   height: 18px;
@@ -1405,45 +1509,54 @@ export default defineComponent({
 
 .logs-icon {
   position: absolute;
-  top: 47px;
-  left: 13px;
-  width: 18.2px;
-  height: 18.2px;
+  top: 7%;
+  left: 9px;
+  width: 28.2px;
+  height: 36.2px;
   object-fit: contain;
 }
 
 .explore-icon {
   position: absolute;
-  top: 12px;
+  top: 2%;
+  left: 7px;
+  width: 30px;
+  height: 25px;
+  object-fit: cover;
+}
+
+.terminal-icon {
+  position: absolute;
+  top: 31%;
   left: 13px;
   width: 18px;
   height: 18px;
   object-fit: cover;
 }
 
-.terminal-icon {
+.config-icon {
   position: absolute;
-  top: 214px;
-  left: 15px;
+  top: 35.5%;
+  left: 9px;
   width: 18px;
-  height: 18px;
-  object-fit: cover;
+  height: 0px;
 }
 
 .side-left-menu {
   position: absolute;
   top: 103px;
   left: 0px;
-  width: 43px;
-  height: 1065px;
+  width: 3%;
+  height: 100%;
+  background-color: #001733;
 }
 
 .sub-header-child {
-  position: absolute;
   top: 0px;
   left: 0px;
   background-color: #001733;
-  width: 1500px;
+  position: absolute;
+  width: 100%;
   height: 38px;
 }
 
@@ -1458,10 +1571,11 @@ export default defineComponent({
 
 .sub-header {
   position: absolute;
+  width: 100%;
   top: 65px;
   left: 0px;
-  width: 1500px;
   height: 38px;
+  background-color: #001733;
 }
 
 .background {
@@ -1640,7 +1754,7 @@ export default defineComponent({
 
 .header {
   position: absolute;
-  width: 100%;
+  width: calc(100% + 1px);
   top: 0px;
   right: -1px;
   left: 0px;
@@ -1743,6 +1857,27 @@ export default defineComponent({
 
 .terminal-icon:hover .tooltiptext {
   visibility: visible;
+}
+
+.config-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.config-icon .tooltiptext {
+  visibility: hidden;
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 20px;
 }
 
 .terminal-icon .tooltiptext {

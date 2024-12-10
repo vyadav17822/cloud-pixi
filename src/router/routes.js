@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import Header from '../components/Header.vue'
 import LoadSuite from '../components/LoadSuite.vue'
-import Content from '../components/Webshell.vue'
+import Webshell from '../components/Webshell.vue'
 import Dashboard from '../components/Dashboard.vue'
 
 
@@ -22,7 +22,7 @@ const router = createRouter({
     {
       name: 'shell',
       path: '/shell',
-      component: Content
+      component: Webshell
     },
     {
       name: 'dashboard',
@@ -32,7 +32,7 @@ const router = createRouter({
     {
       name: 'Webshell',
       path: '/Webshell',
-      component: Content
+      component: Webshell
     }
   ]
 })

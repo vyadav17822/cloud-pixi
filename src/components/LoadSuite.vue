@@ -1,199 +1,288 @@
 <template>
-    <div class="data-table-child">
-        <!-- <label class="upload-btn">
+  <!-- <label class="upload-btn">
             <input type="file" @change="handleFileUpload">
             <button @click="uploadFile">Upload</button>
         </label> -->
-      <div v-if="loadSuiteData" class="table-header">
-        <table class="table">
-          <thead>
-            <tr>
-              <!-- <th v-for="(cell, index) in data[0]" :key="index">{{ cell }}</th> -->
-              <th> Row</th>
-              <th> Title</th>
-              <th> Reps</th>
-              <th> Run</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, rowIndex) in loadSuiteData.slice(2)" :key="rowIndex">
-              <td class="table-row-number" v-for="(cell, cellIndex) in row" :key="cellIndex">{{cell }}</td>
-              <td v-if="this.rowsStatus[rowIndex] === undefined"><span class="bg-null"></span></td>
-              <td v-else-if="this.rowsStatus[rowIndex] === 'success'">
-                <div class="progress-inner" />
-                <div class="failed">Failed</div>
-              </td>
-              <td v-else-if="this.rowsStatus[rowIndex] === 'failed'"><span class="bg-failed" >.</span></td>
-              <!-- <span class="button-trash-icon"> <i class="fas fa-ellipsis-h"></i> </span> -->
-              <td>
-                <button class="btn btn-primary" @click="runCommand(row, rowIndex)" style="background-color: #f3f6f9;"> <i class="fa fa-play" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9;"></i></button>
-                <button class="btn btn-primary" @click="showLog" style="background-color: #f3f6f9;"> <i class="fas fa-ellipsis-h" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9;"></i></button>
-               </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-    </div>
-  </template>
-  
-  <script>
-  // import * as XLSX from 'xlsx';
-  import axios from 'axios';
+  <div :class="showActionPaneEnabled ? 'main-div' : 'main-div-action'">
+    <ScrollPanel v-if="loadSuiteData" :class="showLogsEnabled ? 'table-header' : 'table-header-full'">
+      <table class="table">
+        <thead>
+          <tr class="table-head" style="font-size: 16px">
+            <!-- <th v-for="(cell, index) in data[0]" :key="index">{{ cell }}</th> -->
+            <th>Row</th>
+            <th style="text-align: left">Title</th>
+            <th>Reps</th>
+            <th>Status</th>
+            <th>Run</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(suite, row) in loadSuiteData" :key="row">
+            <td class="table-row-number" style="text-align: center">
+              {{ row + 1 }}
+            </td>
+            <td class="table-row-number" style="text-align: left">
+              <span class="loadsuite-title">{{ suite.Title }}</span>
+            </td>
+            <td></td>
+            <td v-if="suite.status === '0'"></td>
+            <td v-else-if="suite.status === '1'" style="align-items: center !important">
+              <button type="button" class="btn btn-primary" style="background-color: blue; cursor: default">
+                Running
+              </button>
+            </td>
+            <td v-else-if="suite.status === '2'">
+              <button type="button" class="btn btn-success" style="background-color: green; cursor: default">
+                Success
+              </button>
+            </td>
+            <td v-else-if="suite.status === '3'">
+              <button type="button" class="btn btn-danger" style="background-color: red; cursor: default">
+                Failure
+              </button>
+            </td>
+            <td>
+              <button class="btn btn-primary" @click="runCommand(suite)" style="background-color: #f3f6f9"
+                :disabled="isRunButtonDisabled">
+                <i class="fa fa-play" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9"></i>
+              </button>
+              <button class="btn btn-primary" @click="showLog" style="background-color: #f3f6f9">
+                <i class="fas fa-ellipsis-h" aria-hidden="true" style="color: #3699ff; background-color: #f3f6f9"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ScrollPanel>
+  </div>
+</template>
 
-  export default {
-    name: 'LoadSuits',
-    props: {
-      loadSuiteData: {
-        type: Array,
-        required: true
-      }
+<script>
+// import * as XLSX from 'xlsx';
+// import axios from 'axios';
+
+export default {
+  name: "LoadSuits",
+  props: {
+    loadSuiteData: {
+      type: Array,
+      required: true,
     },
-    data() {
-      return {
-        uploadedFile: null,
-        fileToUpload: null,
-        data: null,
-        rowsStatus: []
-      };
+    showActionPaneEnabled: {
+      type: Boolean,
+      default: true,
     },
-    methods: {
+    showLogsEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    isRunSuiteClicked: {
+      type: Boolean,
+      default: false
+    },
+  },
+  data() {
+    return {
+      uploadedFile: null,
+      fileToUpload: null,
+      data: null,
+      key: 1,
+      rowsStatus: [],
+      filteredData: [],
+      isSuiteAborted:JSON.parse(localStorage.getItem("isSuiteAborted")) || false,
+      isSuitePaused: JSON.parse(sessionStorage.getItem("isSuitePaused")) || false
+    };
+  },
+ 
+  mounted() {
+    this.checkStorageChanges(); // Initialize state
+
+    this.storageInterval = setInterval(this.checkStorageChanges, 1000);
+ 
+  },
+  
+  
+  created() {
+  
     
-      runCommand(row, rowIndex){
-        console.log("Data: ", row, rowIndex);
+  },
+  computed: {
+    isRunButtonDisabled() {
+      const disabled = this.isRunSuiteClicked || this.isSuiteAborted || this.isSuitePaused;
+      return disabled;
+    }
+  },
+  methods: {
 
-        let requestBody = {
-            "username": "temproot",
-            "hostname": "10.220.192.219",
-            "port": 22,
-            "password": "infinera",
-            "interface": "CLI",
-            "handle": "show card",
-        }
-        axios.post('http://35.192.211.225:8000/api/connectNE/', requestBody)
-        .then(res => {
-            console.log(res);
-            this.rowsStatus[rowIndex] = "success"
-        })
-        .catch(error => {
-            console.log(error);
-           this.rowsStatus[rowIndex] = "failed"
-        })
-      },
-      showLog() {
-        alert("Show Log:");
+    checkStorageChanges() {
+      const abortedValue = JSON.parse(localStorage.getItem("isSuiteAborted"));
+      const pausedValue = JSON.parse(sessionStorage.getItem("isSuitePaused"));
+
+      if (abortedValue !== this.isSuiteAborted) {
+        this.isSuiteAborted = abortedValue;
       }
-    }
-  };
-  </script>
-  
-  <style scoped>
-    .progress-inner {
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      border-radius: 5px;
-      background-color: #cf1414;
-      width: 102px;
-      height: 32px;
-    }
-    .failed {
-      position: absolute;
-      top: 7px;
-      left: 33px;
-    }
-    .row-title {
-      /* position: absolute; */
-      top: 4px;
-      right: 321.51px;
-      width: 489.7px;
-      height: 24px;
-    }
-    .table-row-number {
-      position: relative;
-      font-family: Poppins;
-      font-weight: 600;
-      color: #000;
-    }
-    .data-row {
-      position: absolute;
-      top: 534px;
-      right: 49.64px;
-      width: 869px;
-      height: 32px;
-      color: #23293d;
-    }
-    .table-row {
-      position: absolute;
-      top: 0px;
-      right: 49.71px;
-      width: 75px;
-      height: 32px;
-    }
-    .button-edit-icon {
-      position: absolute;
-      top: 0px;
-      right: 42.6px;
-      width: 32.4px;
-      height: 32px;
-    }
 
-    .table-header {
-    position: absolute;
-    width: calc(100% - 1px);
-    top: 34px;
-    right: 0px;
-    left: 1px;
-    height: 28px;
-    font-size: 12px;
-    color: #b5b5c3;
-  }
-  .upload-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .upload-btn:hover {
-    background-color: #45a049;
-  }
-  
-  .table-res {
-    overflow-x: auto;
-  }
+      if (pausedValue !== this.isSuitePaused) {
+        this.isSuitePaused = pausedValue;
+      }
+    },
+    
 
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+    async runCommand(suite) {
+      let command = suite.Code;
+      suite.status = "1";
+      try {
+        let res = await this.$runSuiteCommand(command);
+        //console.log("Result: in run suite: ", res);
+        suite.status = "2";
+        if (res.status == "200") {
+          suite.status = "2";
+        } else {
+          suite.status = "3";
+        }
+      } catch (error) {
+        suite.status = "3";
+      }
+    },
 
-  .table th,
-  .table td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-  .bg-null { background-color: #ffffff; width: 100%; height: 100%; display: block; }
-  .bg-success {
-     background-color: #008000;
-     width: 100%; 
-     height: 100%; 
-     display: block; 
-  }
-  .bg-failed{ background-color: #ff0000; width: 100%; height: 100%; display: block; }
+    showLog() {
+      this.$toast.add({ severity: 'info', summary: 'Information', detail: 'Show Logs', life: 3000 });
+    },
+  },
+};
+</script>
 
-  .data-table-child {
-    position: absolute;
-    top: 0px;
-    left: 1px;
-    background-color: #fff;
-    width: 945px;
-    height: 580px;
-    overflow: scroll;
-  }
-  </style>
-  
-  
+<style scoped>
+.loadsuite-title {
+  top: 0px;
+  right: 0px;
+  display: inline-block;
+  height: 24px;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+}
+
+.table-row-number {
+  position: relative;
+  font-family: Poppins;
+  font-weight: 600;
+  color: #fff;
+  font-size: 14px;
+}
+
+.table-header {
+  height: 60%;
+  font-size: 12px;
+  color: #b5b5c3;
+  position: relative;
+  background: #28466a;
+  /* overflow: auto; */
+  border: 0px solid black;
+}
+
+.table-header-full {
+  height: 100%;
+  font-size: 12px;
+  color: #b5b5c3;
+  position: relative;
+  background: #28466a;
+  /* overflow: auto; */
+  border: 0px solid black;
+}
+
+.blank {
+  height: 35%;
+}
+
+.table {
+  width: 97%;
+  padding: 18px 18px;
+  margin-left: 1%;
+  margin-right: 2%
+}
+.table th,
+.table tr{
+  border-bottom: 1px solid white;
+}
+.table th,
+.table td {
+  padding: 8px;
+  text-align: left;
+  vertical-align: middle;
+  color: white;
+}
+
+.bg-null {
+  background-color: #ffffff;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: default;
+}
+
+.bg-success {
+  background-color: #008000 !important;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: default !important;
+}
+
+.bg-failed {
+  background-color: #ff0000;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.loadsuite-title {
+  text-align: left !important;
+}
+
+.table-head {
+  position: sticky;
+  top: 0px !important;
+  z-index: 1;
+  background: #28466a;
+  border-color: inherit;
+  box-sizing: border-box;
+}
+
+.log-window {
+  position: relative;
+  height: 25%;
+  background-color: #1a304d;
+}
+
+.main-div {
+  width: 76%;
+  top: 103px;
+  height: 100%;
+  font-size: 12px;
+  color: #b5b5c3;
+  position: absolute;
+  background: #28466a;
+  border: 0px solid black;
+  margin-left: 24%;
+}
+.table thead th{
+  border-top: 0px;
+  border-bottom:1px solid white;
+}
+
+.main-div-action {
+  width: 57%;
+  top: 103px;
+  height: 100%;
+  font-size: 12px;
+  color: #b5b5c3;
+  position: absolute;
+  background: #28466a;
+  border: 0px solid black;
+  margin-left: 24%;
+}
+</style>
